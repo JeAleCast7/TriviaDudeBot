@@ -1,0 +1,17 @@
+# Secretos y configuración local
+.env
+*.env
+!.env.example
+
+# Datos de n8n
+n8n-data/
+n8n/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+n8nEventLog*.log
+
+# Respaldos y exportaciones sin limpiar
+*backup*/
+*.zip
+*_RAW.json
