@@ -1,0 +1,347 @@
+{
+  "name": "TriviaDude",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        416,
+        64
+      ],
+      "id": "ce213fc7-e607-48d3-a248-7cdfa2e348dd",
+      "name": "Telegram Trigger",
+      "webhookId": "857ffbd9-a6a6-4deb-84f6-3cfacb7ca99d",
+      "credentials": {
+        "telegramApi": {
+          "id": "eWLPEQuWWIzez7ZE",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ ($json.message.text || '').trim().toLowerCase().split(/[\\s@]/)[0] }}",
+                    "rightValue": "/start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "7d024547-5609-4c53-8cb0-6579deb1be5f"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "start"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "id": "b025395c-b578-489f-9316-3eacc7dd7145",
+                    "leftValue": "={{ ($json.message.text || '').trim().toLowerCase().split(/[\\s@]/)[0] }}",
+                    "rightValue": "/quiz",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "quiz"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "id": "6a829698-cb2d-4968-ba22-fc9b9095a344",
+                    "leftValue": "={{ ($json.message.text || '').trim().toLowerCase().split(/[\\s@]/)[0] }}",
+                    "rightValue": "/cyber",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "cyber"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.5,
+      "position": [
+        608,
+        48
+      ],
+      "id": "c1d5562e-97ea-4748-b820-3adc8936d6f8",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').first().json.message.chat.id }}",
+        "text": "🗿 ¡Hola! Soy TriviaDudeBot.  \nEstos son mis comandos:  \n\n/quiz – Pregunta de inglés nivel B2 \n/cyber – Pregunta de ciberseguridad (entrevista) \n/start – Mostrar este menú",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        880,
+        -32
+      ],
+      "id": "2f966757-66fb-417c-90df-866c22e28eb1",
+      "name": "Send a text message",
+      "webhookId": "d1c22d70-654b-4656-bb34-9efbce8dd42f",
+      "credentials": {
+        "telegramApi": {
+          "id": "eWLPEQuWWIzez7ZE",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ec727be0-bd06-417e-bc93-d53060780171",
+              "name": "systemPrompt",
+              "value": "=You are a cybersecurity interviewer preparing a candidate for a junior-to-mid level security job interview (SOC analyst, pentester or security engineer). Generate ONE multiple-choice question about: {{ ['networking (TCP/IP, DNS, ports)','cryptography','OWASP Top 10','authentication and access control','malware','incident response','Linux and Windows hardening','firewalls and IDS/IPS','cloud security','social engineering','vulnerability management','SIEM and log analysis'].sort(() => Math.random() - 0.5)[0] }}. Write the question and options in English. It must be realistic for a job interview, with exactly one clearly correct answer and three plausible distractors. Return ONLY a JSON object with these keys: question (string, max 280 chars), options (array of exactly 4 strings, max 90 chars each), correct_index (integer 0-3), explanation (string, max 190 chars, in Spanish). Randomize the position of the correct answer.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        880,
+        320
+      ],
+      "id": "88580671-9dc3-4ab6-a355-dfb7cd9015dc",
+      "name": "Prompt cyber"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6059c6df-c209-4961-bbb6-3b580c0d78f4",
+              "name": "systemPrompt",
+              "value": "=You are an English teacher. Generate ONE multiple-choice question at CEFR B2 level. Topic: {{ ['grammar','vocabulary','phrasal verbs','collocations','conditionals','reported speech','idioms','linkers'].sort(() => Math.random() - 0.5)[0] }}. Return ONLY a JSON object with these keys: question (string, max 280 chars), options (array of exactly 4 strings, max 90 chars each), correct_index (integer 0-3), explanation (string, max 190 chars, in Spanish). Randomize the position of the correct answer.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        880,
+        160
+      ],
+      "id": "3473616f-b502-401c-bb84-11d0765fd49e",
+      "name": "Prompt ingles"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"openai/gpt-oss-120b\",\n  \"temperature\": 1,\n  \"reasoning_effort\": \"low\",\n  \"response_format\": { \"type\": \"json_object\" },\n  \"messages\": [\n    { \"role\": \"system\", \"content\": {{ JSON.stringify($json.systemPrompt) }} },\n    { \"role\": \"user\", \"content\": \"Give me a new question.\" }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1120,
+        240
+      ],
+      "id": "46331eeb-90a0-4780-979f-028e44fcd00c",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "JbY1uePdzM6Ptux2",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json.choices[0].message.content\n  .replace(/```json|```/g, '')\n  .trim();\n\nconst q = JSON.parse(raw);\n\n// Validaciones para evitar quizzes rotos\nif (!Array.isArray(q.options) || q.options.length !== 4) {\n  throw new Error('La IA no devolvió 4 opciones');\n}\nif (!Number.isInteger(q.correct_index) || q.correct_index < 0 || q.correct_index > 3) {\n  throw new Error('correct_index inválido');\n}\n\nreturn [{ json: q }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1296,
+        240
+      ],
+      "id": "6c1274a0-c0d3-4990-b65e-f511600ec3bc",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.telegram.org/botTU_TOKEN_AQUI/sendPoll",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"chat_id\": {{ $('Telegram Trigger').first().json.message.chat.id }},\n  \"question\": {{ JSON.stringify($json.question) }},\n  \"options\": {{ JSON.stringify($json.options) }},\n  \"type\": \"quiz\",\n  \"correct_option_id\": {{ $json.correct_index }},\n  \"explanation\": {{ JSON.stringify($json.explanation) }},\n  \"is_anonymous\": false\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1472,
+        240
+      ],
+      "id": "a75d648a-65a3-4cfd-bf83-de7225d2765f",
+      "name": "HTTP Request1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "JbY1uePdzM6Ptux2",
+          "name": "Header Auth account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prompt ingles",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prompt cyber",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt cyber": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt ingles": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "07b78185-3188-499b-9893-45635709f9db",
+  "meta": {
+    "instanceId": "0de49488be5b6148571f1758be09f5b472ae686283e63b0d62b060744cb88ed2"
+  },
+  "nodeGroups": [],
+  "id": "KMteQWDLXtfLcTZQ",
+  "tags": []
+}
