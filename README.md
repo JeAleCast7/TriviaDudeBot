@@ -8,33 +8,34 @@ Construido con **n8n**, **Groq** y **Docker**, y desplegado en un **Ubuntu Serve
 
 <div align="center">
   <a href="https://n8n.io/">
-    <img src="images/icons/n8n.svg" width=50>
+    <img src="docs/icons/n8n.svg" width=50>
   </a>
   <a href="https://www.docker.com/">
-    <img src="images/icons/docker.svg" width=42>
+    <img src="docs/icons/docker.svg" width=42>
   </a>
   <a href="https://web.telegram.org/k/">
-    <img src="images/icons/telegram.svg" width=35>
+    <img src="docs/icons/telegram.svg" width=35>
   </a>
   <a href="https://groq.com/">
-    <img src="images/icons/groq.svg" width=35>
+    <img src="docs/icons/groq.svg" width=35>
   </a>
   <a href="https://ubuntu.com/download/server">
-    <img src="images/icons/ubuntu.svg" width=39>
+    <img src="docs/icons/ubuntu.svg" width=39>
   </a>
 </div>
 
 
-<img src="images/menu.png" alt="TriviaDudeBot mostrando el menú de comandos y un quiz en Telegram" width="500">
+<img src="docs/menu.png" alt="TriviaDudeBot mostrando el menú de comandos y un quiz en Telegram" width="500" 
+style="border-radius: 24px;">
 
 
-<sub> <i>Captura de portada: el menú de <code>/start</code> .</i></sub>
+<sub> <i>Captura de portada: el menú de <code>/start</code> </i></sub>
 
 </div>
 
 ---
 
-## 📚 Tabla de contenido
+##  Tabla de contenido
 
 | # | Sección | Qué encontrarás |
 |---|---------|-----------------|
@@ -67,14 +68,10 @@ Construido con **n8n**, **Groq** y **Docker**, y desplegado en un **Ubuntu Serve
 | 24 | [Checklist de capturas](#capturas) | Imágenes que debes agregar |
 | 25 | [Licencia y autoría](#licencia) | |
 
-> [!NOTE]
-> Esta guía está pensada para que la entiendas **leyéndola** y **viéndola**: cada paso importante tiene un espacio para una captura (`Figura N`). Al final, en la [sección 24](#capturas), encontrarás la lista completa de nombres de archivo para que no se te pase ninguna.
-
----
 
 <a id="que-es"></a>
 
-## 1. 🎯 ¿Qué es TriviaDudeBot?
+## 1.  ¿Qué es TriviaDudeBot?
 
 **TriviaDudeBot** es un bot de Telegram de trivia con un **menú de comandos**, parecido al que muestra BotFather cuando le escribes `/start`. Hoy responde a tres comandos:
 
@@ -97,7 +94,7 @@ Las preguntas llegan como **quiz nativo de Telegram**: tocas una opción, Telegr
 
 Las dos ramas de quiz **comparten los mismos nodos de Groq, Code y envío**: lo único que cambia entre ellas es el prompt.
 
-### Lo que vas a aprender construyéndolo
+### Aprendizajes
 
 - Instalar **Docker Desktop** en Windows con **WSL 2** y ejecutar **n8n** en un contenedor.
 - Crear un bot con **BotFather**, registrar su menú de comandos y consumir una **API de IA** (Groq) desde n8n.
@@ -106,62 +103,25 @@ Las dos ramas de quiz **comparten los mismos nodos de Groq, Code y envío**: lo 
 - Validar con un nodo **Code** lo que devuelve una IA, para que nunca llegue un quiz roto.
 - Crear un **servidor Ubuntu en VirtualBox**, manejarlo por **SSH** e instalar **Docker**.
 - **Migrar** el sistema entre Windows y el servidor sin perder credenciales, y evitar que dos n8n se disputen el mismo bot.
-- Publicar el proyecto en **GitHub** sin filtrar secretos.
-
 ---
 
 <a id="arquitectura"></a>
 
-## 2. 🏗️ Arquitectura
+## 2.  Arquitectura
 
 ### 2.1 Qué pasa cuando escribes `/quiz` o `/cyber`
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor U as Usuario
-    participant T as Telegram
-    participant C as Cloudflare Tunnel
-    participant N as n8n (Docker)
-    participant G as Groq API
-
-    U->>T: /quiz (o /cyber)
-    T->>C: POST al webhook (HTTPS)
-    C->>N: Reenvía a localhost:5678
-    N->>N: Switch: ¿qué comando es?
-    N->>N: Edit Fields: elige el prompt (inglés o ciberseguridad)
-    N->>G: Pide una pregunta en JSON
-    G-->>N: pregunta, 4 opciones, respuesta correcta, explicación
-    N->>N: Code: valida y convierte el JSON
-    N->>T: sendPoll (tipo quiz)
-    T-->>U: Quiz interactivo con explicación
-```
+<img src="docs/UXtriviadudebot.png">
 
 Con `/start` el recorrido es más corto: el Switch envía directamente el mensaje del menú, sin pasar por Groq.
 
 ### 2.2 Dónde vive cada pieza
 
-```mermaid
-flowchart LR
-    subgraph PC["💻 PC con Windows 11"]
-        VB["VirtualBox"] --> VM["🐧 Ubuntu Server (VM)"]
-        VM --> D["🐳 Docker"]
-        D --> N["⚙️ n8n"]
-        VM --> CF["☁️ cloudflared"]
-    end
-    CF <--> CLOUD(("Cloudflare"))
-    CLOUD <--> TG(("Telegram"))
-    N --> GQ(("Groq API"))
-```
-
-> [!IMPORTANT]
-> El bot solo responde **mientras Docker y el túnel estén en marcha** en el equipo que lo sirve (el servidor o tu PC). Más adelante verás cómo reducir lo que debes hacer a mano cuando algo se reinicia.
-
----
+<img src="docs/dondeVive.png">
 
 <a id="conceptos"></a>
 
-## 3. 📖 Conceptos clave
+## 3.  Conceptos clave
 
 | Término | En palabras simples |
 |---------|---------------------|
