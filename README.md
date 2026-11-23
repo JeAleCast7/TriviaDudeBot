@@ -25,7 +25,7 @@ Construido con **n8n**, **Groq** y **Docker**, y desplegado en un **Ubuntu Serve
 </div>
 
 
-<img src="images/menu.png" alt="TriviaDudeBot mostrando el menú de comandos y un quiz en Telegram" width="320">
+<img src="images/menu.png" alt="TriviaDudeBot mostrando el menú de comandos y un quiz en Telegram" width="500">
 
 
 <sub> <i>Captura de portada: el menú de <code>/start</code> .</i></sub>
