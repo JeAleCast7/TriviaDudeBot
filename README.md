@@ -1,26 +1,34 @@
 <div align="center">
 
-# 🎲 TriviaDudeBot
+#  TriviaDudeBot
 
 ### Un bot de trivia en Telegram con menú de comandos
 
-**Escribe `/start` para ver el menú, `/quiz` para practicar inglés nivel B2 y `/cyber` para entrenar preguntas de entrevista de ciberseguridad.**
-Construido con **n8n**, **Groq** y **Docker**, y desplegado en un **servidor Ubuntu** que corre en una máquina virtual.
+Construido con **n8n**, **Groq** y **Docker**, y desplegado en un **Ubuntu Server** que corre en una VM.
 
-<br>
+<div align="center">
+  <a href="https://n8n.io/">
+    <img src="images/icons/n8n.svg" width=50>
+  </a>
+  <a href="https://www.docker.com/">
+    <img src="images/icons/docker.svg" width=42>
+  </a>
+  <a href="https://web.telegram.org/k/">
+    <img src="images/icons/telegram.svg" width=35>
+  </a>
+  <a href="https://groq.com/">
+    <img src="images/icons/groq.svg" width=35>
+  </a>
+  <a href="https://ubuntu.com/download/server">
+    <img src="images/icons/ubuntu.svg" width=39>
+  </a>
+</div>
 
-![n8n](https://img.shields.io/badge/n8n-Automation-EA4B71?style=for-the-badge&logo=n8n&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-Containers-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-![Telegram](https://img.shields.io/badge/Telegram-Bot-26A5E4?style=for-the-badge&logo=telegram&logoColor=white)
-![Groq](https://img.shields.io/badge/Groq-LLM%20API-F55036?style=for-the-badge)
-![Ubuntu](https://img.shields.io/badge/Ubuntu-Server-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)
-![VirtualBox](https://img.shields.io/badge/VirtualBox-VM-183A61?style=for-the-badge&logo=virtualbox&logoColor=white)
 
-<br>
+<img src="images/menu.png" alt="TriviaDudeBot mostrando el menú de comandos y un quiz en Telegram" width="320">
 
-<img src="docs/images/00-demo.png" alt="TriviaDudeBot mostrando el menú de comandos y un quiz en Telegram" width="320">
 
-<sub>📸 <i>Captura de portada: el menú de <code>/start</code> y un quiz respondido.</i></sub>
+<sub> <i>Captura de portada: el menú de <code>/start</code> .</i></sub>
 
 </div>
 
