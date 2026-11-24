@@ -44,8 +44,6 @@ Construido con **n8n**, **Groq** y **Docker**, y desplegado en un **Ubuntu Serve
 style="border-radius: 24px;">
 
 
-<sub> <i>Captura de portada: el menú de <code>/start</code> </i></sub>
-
 </div>
 
 ---
@@ -60,7 +58,7 @@ style="border-radius: 24px;">
 | 4 | [Requisitos](#requisitos) | Lo que necesitas antes de empezar |
 | 5 | [Estructura del repositorio](#estructura) | Qué archivo hace qué |
 | | **PARTE I · Desarrollo en Windows** | |
-| 6 | [Instalar Docker Desktop](#docker-desktop) | WSL 2, instalación y verificación |
+| 6 | [Docker Desktop](#docker-desktop) | WSL 2, instalación y verificación |
 | 7 | [Descargar y ejecutar n8n](#n8n-pull) | `docker pull`, `docker run` y Docker Desktop |
 | 8 | [Crear el bot (BotFather) y la API de Groq](#telegram-groq) | Token, menú de comandos, API key y modelo |
 | 9 | [El túnel público (Cloudflare)](#tunel) | Por qué Telegram lo necesita y cómo abrirlo |
@@ -196,7 +194,7 @@ triviadudebot/
     └── images/            ← capturas usadas en este README
     └── icons/             ← iconos de tools
 ```
-
+<br>
 
 ---
 
@@ -204,7 +202,7 @@ triviadudebot/
 
 <a id="docker-desktop"></a>
  
-## 6. <a href="https://www.docker.com/"><img src="docs/icons/docker.svg" width=42> Instalar Docker Desktop </a>
+## 6. <a href="https://www.docker.com/"><img src="docs/icons/docker.svg" width=40></a> Docker Desktop 
 
 
 Docker Desktop en Windows usa **WSL 2** (Linux dentro de Windows) como motor. Por eso, primero se prepara WSL y después se instala Docker Desktop.
@@ -218,7 +216,7 @@ Docker Desktop en Windows usa **WSL 2** (Linux dentro de Windows) como motor. Po
 
 ### 6.2 Instalar o actualizar WSL 2
 
-Abre **PowerShell como administrador** (clic derecho → *Ejecutar como administrador*):
+Abre **PowerShell como administrador**:
 
 ```powershell
 wsl --install
@@ -236,35 +234,19 @@ wsl --update
 wsl --version
 ```
 
-Debe mostrarte las versiones de WSL y del kernel **sin quedarse colgado y sin errores**.
+Debe mostrarte las versiones de WSL y del kernel.
 
 <p align="center">
-  <img src="docs/images/01-wsl-version.png" alt="Salida correcta del comando wsl --version" width="650"><br>
-  <sub><b>Figura 1.</b> Salida correcta de <code>wsl --version</code>.</sub>
-</p>
+  <img src="docs/wsl.png" width="500"><br>
+  <img src="docs/wsl2.png" width="250"><br>
+<sub> Ahora sale el logo de Linux en el explorador de archivos</sub>
 
-> [!TIP]
-> Si `wsl --version` se cuelga o da errores como `CommandTimedOut` o `REGDB_E_CLASSNOTREG`, ve a [Errores de WSL](#err-wsl) en la sección de solución de problemas antes de continuar.
-
-### 6.3 Instalar Docker Desktop
+### 6.3 <a href="https://www.docker.com/"> Instalar Docker Desktop </a>
 
 1. Descarga el instalador desde la web oficial de Docker (*Docker Desktop for Windows*).
 2. Ejecuta `Docker Desktop Installer.exe`.
-3. Deja marcada la opción **Use WSL 2 instead of Hyper-V** y pulsa **OK/Install**.
-4. Al terminar, **reinicia** Windows si te lo pide.
-5. Abre Docker Desktop, acepta los términos y espera a que abajo a la izquierda indique que el motor está en ejecución (*Engine running*).
+3. Abre Docker Desktop, acepta los términos.
 
-<p align="center">
-  <img src="docs/images/02-docker-desktop-instalador.png" alt="Instalador de Docker Desktop con la opción WSL 2 marcada" width="650"><br>
-  <sub><b>Figura 2.</b> Instalador de Docker Desktop con la opción de WSL 2 activada.</sub>
-</p>
-
-Comprueba en **Settings → General** que esté activada la casilla **Use the WSL 2 based engine**.
-
-<p align="center">
-  <img src="docs/images/03-docker-desktop-wsl2.png" alt="Ajustes de Docker Desktop con el motor WSL 2 activado" width="650"><br>
-  <sub><b>Figura 3.</b> Motor basado en WSL 2 activado en Docker Desktop.</sub>
-</p>
 
 ### 6.4 Verificar la instalación
 
@@ -277,80 +259,29 @@ docker run hello-world
 
 | Comando | Qué hace |
 |---------|----------|
-| `docker --version` | Muestra la versión instalada; confirma que el cliente funciona. |
-| `docker run hello-world` | Descarga una imagen mínima de prueba y la ejecuta. Si ves *"Hello from Docker!"*, todo el sistema funciona. |
+| `docker --version` | Muestra la versión instalada. |
+| `docker run hello-world` | Descarga una imagen mínima de prueba y la ejecuta. Debe devolver *"Hello from Docker!"* |
 
 ---
 
 <a id="n8n-pull"></a>
 
-## 7. ⚙️ Descargar (`pull`) y ejecutar n8n
+## 7. Descargar (`pull`) y ejecutar n8n 
 
 ### 7.1 Imagen vs. contenedor
 
 - La **imagen** `n8nio/n8n` es el paquete oficial de n8n publicado en Docker Hub. Se descarga **una vez**.
 - El **contenedor** es esa imagen funcionando. Puedes crearlo, detenerlo y borrarlo sin tocar la imagen.
 
-### 7.2 Opción A: desde la terminal
-
-**Paso 1 · Descargar la imagen**
-
-```powershell
-docker pull n8nio/n8n:latest
-```
-
-Descarga la última versión de n8n desde Docker Hub. (Esta guía se probó con **n8n 2.48.6**. Si quieres reproducibilidad exacta, puedes reemplazar `latest` por un número de versión concreto; los tags disponibles están en Docker Hub).
-
-**Paso 2 · Ejecutar el contenedor**
-
-```powershell
-docker run -d --name n8n_local -p 5678:5678 -v C:\Users\TU_USUARIO\n8n:/home/node/.n8n n8nio/n8n:latest
-```
-
-| Parte del comando | Significado |
-|-------------------|-------------|
-| `docker run` | Crea y arranca un contenedor nuevo. |
-| `-d` | *Detached*: corre en segundo plano y te devuelve la terminal. |
-| `--name n8n_local` | Le pone un nombre fácil de recordar. |
-| `-p 5678:5678` | Conecta el puerto **5678 de tu PC** con el **5678 del contenedor** (el puerto de n8n). Por eso abres `http://localhost:5678`. |
-| `-v C:\Users\TU_USUARIO\n8n:/home/node/.n8n` | Conecta una carpeta de tu PC con la carpeta interna donde n8n guarda **todo**: base de datos, credenciales cifradas y su clave de cifrado. Si Docker no encuentra la carpeta, la crea. |
-| `n8nio/n8n:latest` | La imagen que se va a ejecutar. |
-
-> [!IMPORTANT]
-> El parámetro `-v` es lo que **protege tu trabajo**. Sin él, al borrar el contenedor perderías todos tus workflows y credenciales.
-
-### 7.3 Opción B: desde la interfaz de Docker Desktop
-
-1. Ve a **Images** → busca `n8nio/n8n` en la barra de búsqueda → **Pull**.
-2. Cuando termine, pulsa el botón **▶ Run** de esa imagen.
-3. Abre **Optional settings** y rellena:
-   - **Container name:** `n8n_local`
-   - **Host port:** `5678`
-   - **Volumes → Host path:** `C:\Users\TU_USUARIO\n8n` → **Container path:** `/home/node/.n8n`
-4. Pulsa **Run**.
-
+### 7.2 Tutorial:
 <p align="center">
-  <img src="docs/images/04-docker-pull-n8n.png" alt="Pestaña Images de Docker Desktop descargando n8nio/n8n" width="650"><br>
-  <sub><b>Figura 4.</b> Descarga (<i>pull</i>) de la imagen <code>n8nio/n8n</code>.</sub>
-</p>
-
-<p align="center">
-  <img src="docs/images/05-docker-run-opciones.png" alt="Ventana Run con nombre, puerto y volumen configurados" width="650"><br>
-  <sub><b>Figura 5.</b> Opciones del contenedor: nombre, puerto y carpeta de datos.</sub>
-</p>
-
-> [!NOTE]
-> Crear el contenedor desde Docker Desktop **no genera ningún `docker-compose.yml`**. En la [sección 10](#compose-windows) verás cómo pasar a Compose sin perder datos.
-
-### 7.4 Primer acceso a n8n
-
-1. Abre **http://localhost:5678** en tu navegador.
-2. n8n te pide crear la cuenta del propietario (correo, nombre y contraseña). Es local, solo para ti.
-3. Ya puedes ver el editor vacío.
-
-<p align="center">
-  <img src="docs/images/06-n8n-registro-propietario.png" alt="Pantalla inicial de n8n para crear la cuenta del propietario" width="650"><br>
-  <sub><b>Figura 6.</b> Primer acceso: creación de la cuenta del propietario de n8n.</sub>
+<a href="https://www.youtube.com/watch?v=BfFkNou9m7k">
+  <img src="docs/miniatura.png" width="500">
+</a>
+<br>
+<sub>Creditos reservados al canal de Jaime Herrera por su tutorial</sub>
+<br>
+<sub>Desde minuto 2:22</sub>
 </p>
 
 ### 7.5 Comandos útiles para manejar el contenedor
@@ -369,7 +300,7 @@ docker run -d --name n8n_local -p 5678:5678 -v C:\Users\TU_USUARIO\n8n:/home/nod
 
 <a id="telegram-groq"></a>
 
-## 8. 🔑 Crear el bot (BotFather) y la API de Groq
+## 8.  Crear el bot (BotFather) y la API de Groq
 
 ### 8.1 Crear el bot en Telegram con BotFather
 
