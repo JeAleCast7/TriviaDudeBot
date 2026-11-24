@@ -22,6 +22,21 @@ Construido con **n8n**, **Groq** y **Docker**, y desplegado en un **Ubuntu Serve
   <a href="https://ubuntu.com/download/server">
     <img src="docs/icons/ubuntu.svg" width=39>
   </a>
+  <a href="https://www.microsoft.com/en-us/software-download/windows11">
+    <img src="docs/icons/windows.svg" width=35>
+  </a>
+  <a href="https://code.visualstudio.com/">
+    <img src="docs/icons/vscode.svg" width=37>
+  </a>
+  <a>
+    <img src="docs/icons/bash.svg" width=38>
+  </a>
+  <a>
+    <img src="docs/icons/powershell.svg" width=40>
+  </a>
+  <a>
+    <img src="docs/icons/cloudflare.svg" width=78>
+  </a>
 </div>
 
 
@@ -37,11 +52,11 @@ style="border-radius: 24px;">
 
 ##  Tabla de contenido
 
-| # | Sección | Qué encontrarás |
+|   | Sección | Qué encontrarás |
 |---|---------|-----------------|
-| 1 | [¿Qué es TriviaDudeBot?](#que-es) | Los tres comandos y qué vas a aprender |
+| 1 | [¿Qué es TriviaDudeBot?](#que-es) | Los tres comandos y aprendizajes |
 | 2 | [Arquitectura](#arquitectura) | Diagramas del flujo y de la infraestructura |
-| 3 | [Conceptos clave](#conceptos) | Glosario para no perderte |
+| 3 | [Conceptos clave](#conceptos) | Glosario de terminos |
 | 4 | [Requisitos](#requisitos) | Lo que necesitas antes de empezar |
 | 5 | [Estructura del repositorio](#estructura) | Qué archivo hace qué |
 | | **PARTE I · Desarrollo en Windows** | |
@@ -143,49 +158,45 @@ Con `/start` el recorrido es más corto: el Switch envía directamente el mensaj
 | **Ubuntu Server** | Sistema operativo Linux sin interfaz gráfica, ideal para servidores. |
 | **SSH** | Forma segura de controlar otro equipo escribiendo comandos desde tu terminal. |
 | **Groq** | Servicio que ejecuta modelos de IA muy rápido mediante una API. |
-| **`.env`** | Archivo con valores privados o específicos de tu entorno. **Nunca** se sube a GitHub. |
 
 ---
 
 <a id="requisitos"></a>
 
-## 4. ✅ Requisitos
+## 4.  Requisitos
 
 | Necesitas | Para qué | Dónde |
 |-----------|----------|-------|
 | PC con **Windows 11** (64 bits) | Entorno de desarrollo y anfitrión de la VM | — |
-| **Virtualización activada** en BIOS/UEFI | Docker Desktop y VirtualBox la necesitan | Se revisa en el Administrador de tareas |
-| **16 GB de RAM** recomendados (8 GB mínimo) | Docker + VM funcionando a la vez | — |
-| ~40 GB de disco libres | Imágenes de Docker + disco de la VM | — |
+| **Virtualización activada** en BIOS/UEFI | Docker Desktop y VirtualBox la necesitan | Se revisa en el Administrador de tarea, de estar desactivada se debe activar en BIOS |
+| **16 GB de RAM** | Docker + VM funcionando a la vez | — |
 | Cuenta de **Telegram** | Crear y probar el bot | telegram.org |
 | Cuenta de **Groq** | API key del modelo de IA | console.groq.com |
 | **Docker Desktop** | Ejecutar n8n en Windows | docker.com |
 | **VirtualBox** | Crear el servidor virtual | virtualbox.org |
 | **ISO de Ubuntu Server** | Instalar el sistema del servidor | ubuntu.com/download/server |
 | **cloudflared** | Túnel público | Se instala con `winget` (Windows) o `.deb` (Ubuntu) |
-| **Git** y cuenta de **GitHub** | Versionar y publicar el proyecto | `winget install Git.Git` · github.com |
-| **VS Code** (recomendado) | Editar el compose y limpiar el JSON del workflow | code.visualstudio.com |
+| **VS Code** | Editar el compose y limpiar el JSON del workflow | code.visualstudio.com |
 
 ---
 
 <a id="estructura"></a>
 
-## 5. 🗂️ Estructura del repositorio
+## 5.  Estructura del repositorio
 
 ```text
 triviadudebot/
 ├── README.md              ← esta guía
 ├── docker-compose.yml     ← define el contenedor de n8n
-├── .env.example           ← plantilla de variables (cópiala como .env)
+├── .env.example           ← plantilla de variables
 ├── .gitignore             ← evita subir secretos y datos de n8n
 ├── workflows/
 │   └── triviadudebot.json ← el workflow exportado y LIMPIO (sin token)
 └── docs/
     └── images/            ← capturas usadas en este README
+    └── icons/             ← iconos de tools
 ```
 
-> [!WARNING]
-> Estos archivos **no** deben existir en el repositorio: `.env`, la carpeta de datos de n8n (`n8n-data/` o `n8n/`, que contiene la base de datos y la clave de cifrado), ni cualquier exportación del workflow que aún tenga el token (`*_RAW.json`). La [sección 21](#seguridad) explica cómo verificarlo.
 
 ---
 
@@ -193,7 +204,7 @@ triviadudebot/
 
 <a id="docker-desktop"></a>
 
-## 6. 🐳 Instalar Docker Desktop
+## 6. <img href="docker.com" src="docs/icons/docker.svg" width="30"> Instalar Docker Desktop
 
 Docker Desktop en Windows usa **WSL 2** (Linux dentro de Windows) como motor. Por eso, primero se prepara WSL y después se instala Docker Desktop.
 
@@ -203,7 +214,6 @@ Docker Desktop en Windows usa **WSL 2** (Linux dentro de Windows) como motor. Po
 2. Ve a **Rendimiento → CPU**.
 3. Abajo a la derecha debe decir **Virtualización: Habilitado**.
 
-Si dice *Deshabilitado*, entra a la BIOS/UEFI de tu equipo y activa **Intel VT-x** (procesadores Intel) o **AMD SVM** (procesadores AMD).
 
 ### 6.2 Instalar o actualizar WSL 2
 
