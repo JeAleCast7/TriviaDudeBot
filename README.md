@@ -203,8 +203,9 @@ triviadudebot/
 # PARTE I · Desarrollo en Windows
 
 <a id="docker-desktop"></a>
+ 
+## 6. <a href="docker.com"><img src="docs/icons/docker.svg" width="30"> </a> Instalar Docker Desktop
 
-## 6. <img href="docker.com" src="docs/icons/docker.svg" width="30"> Instalar Docker Desktop
 
 Docker Desktop en Windows usa **WSL 2** (Linux dentro de Windows) como motor. Por eso, primero se prepara WSL y después se instala Docker Desktop.
 
