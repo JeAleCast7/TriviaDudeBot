@@ -1312,15 +1312,16 @@ docker compose exec n8n printenv WEBHOOK_URL
 
 ## 19. Exportar el workflow
 
+### 19.1 Exportar en JSON
+
 1. Abre el editor del n8n de origen y el workflow de TriviaDudeBot.
 2. Menú **⋯** (arriba a la derecha) → **Download**. Se guarda un `.json` en tu carpeta de Descargas.
 
 *Atajo sin archivo:* en el editor de origen pulsa `Ctrl+A` (seleccionar todos los nodos) y `Ctrl+C`; en el editor de destino, con un workflow vacío, pulsa `Ctrl+V`. Funciona igual.
 
-> [!CAUTION]
-> El archivo exportado lleva dentro el **token del bot**, porque está escrito en la URL del nodo `sendPoll`. Trátalo como un secreto: no lo subas a GitHub ni lo compartas (ver [sección 21](#seguridad)).
+---
 
-### 20.3 Importar en el otro n8n
+### 19.2 Importar en el otro n8n
 
 1. Abre el n8n de destino (por ejemplo `http://localhost:5678` para el de Windows) y crea un **workflow nuevo**.
 2. Menú **⋯** → **Import from file** y elige el `.json`.
@@ -1335,7 +1336,7 @@ docker compose exec n8n printenv WEBHOOK_URL
 
 El nodo `sendPoll` ya trae el token en su URL porque viajó dentro del JSON.
 
-### 20.4 Arrancar el n8n de Windows sin quitarle el webhook al servidor
+### 19.3 Arrancar el n8n de Windows sin quitarle el webhook al servidor
 
 Si tu n8n de Windows conserva workflows **publicados** de pruebas anteriores, al arrancar con un túnel activo podrían registrar su webhook y quitárselo al servidor. Para evitarlo:
 
@@ -1348,7 +1349,7 @@ Si tu n8n de Windows conserva workflows **publicados** de pruebas anteriores, al
 3. Abre `http://localhost:5678`. Es posible que aparezcan avisos al activar workflows: es esperable, por la URL muerta.
 4. Haz **Unpublish** de cualquier copia vieja de un workflow que siga publicada.
 
-### 20.5 Probar en Windows y devolver el webhook
+### 19.4 Probar en Windows y devolver el webhook
 
 - **Sin tocar el webhook (lo más seguro):** edita el workflow y prueba **nodos sueltos** (por ejemplo, ejecutar solo el Code), sin publicar.
 - **Probando el Telegram Trigger completo:** necesitas un túnel propio y el procedimiento. Mientras pruebas, el webhook del bot está en Windows.
