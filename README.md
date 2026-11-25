@@ -257,7 +257,7 @@ Debe mostrarte las versiones de WSL y del kernel.
 <br>
 </p>
 
-### 7.5 Comandos útiles para manejar el contenedor
+### 7.3 Comandos útiles para manejar el contenedor
 
 | Comando | Para qué sirve |
 |---------|----------------|
@@ -498,7 +498,7 @@ Debe imprimir la URL de tu túnel. Después abre `http://localhost:5678` y confi
 
 ## 11. Construir el workflow de TriviaDudeBot
 
-### 11.0 La idea antes de los clics
+### 11.1 La idea antes de los clics
 
 Hay tres comandos y cada uno debe hacer algo distinto. Para repartirlos se usa un nodo **Switch**:
 
@@ -511,11 +511,11 @@ Y para no repetir nodos, las dos ramas de quiz **comparten la misma cadena** (Gr
 
 
 <p align="center">
-  <img src="docs/workflow.png" alt="Vista completa del workflow de TriviaDudeBot en n8n" width="800"><br>
+  <img src="docs/workflow.png"width="800"><br>
 </p>
 
 
-### 11.1 Crear las credenciales
+### 11.2 Crear las credenciales
 
 En n8n: **Credentials → Create credential** (o desde dentro de cada nodo).
 
@@ -537,7 +537,7 @@ En n8n: **Credentials → Create credential** (o desde dentro de cada nodo).
 | Access Token | El token que brindo BotFather para **TriviaDudeBot** |
 
 
-### 11.2 Nodo 1 · Telegram Trigger
+### 11.3 Nodo 1 · Telegram Trigger
 
 Es el **disparador**: se activa cada vez que alguien escribe al bot.
 
@@ -553,7 +553,7 @@ Es el **disparador**: se activa cada vez que alguien escribe al bot.
 > [!NOTE]
 > Este nodo **requiere** el túnel y `WEBHOOK_URL` de las secciones 9 y 10. Si no, n8n mostrará un error pidiendo una URL HTTPS, o *"bad webhook: Failed to resolve host"*.
 
-### 11.3 Nodo 2 · Switch (el repartidor de comandos)
+### 11.4 Nodo 2 · Switch (el repartidor de comandos)
 
 1. Agrega un **Switch** después del trigger. **Mode:** *Rules*.
 2. Crea **3 reglas** (*Add Routing Rule*). En **todas**, *Value 1* es esta expresión y el operador es **String → is equal to**:
@@ -587,7 +587,7 @@ Es el **disparador**: se activa cada vez que alguien escribe al bot.
 > [!WARNING]
 > **El error más común de este nodo: el campo en modo *Fixed*.** Si pegas la expresión y el campo queda en modo fijo, n8n la trata como **texto literal** y nunca coincide con ningún comando: el flujo se detiene **sin mostrar ningún error** y el bot parece mudo. Reconocerlo es fácil: un campo en modo *Expression* muestra el icono **`fx`** a la izquierda y el texto resaltado en **verde**. Si no lo ves, pasa el mouse sobre el campo y cambia **Fixed** por **Expression**.
 
-### 11.4 Nodo 3 · Send a text message (el menú de `/start`)
+### 11.5 Nodo 3 · Send a text message (el menú de `/start`)
 
 Conecta la salida **start** a un nodo **Telegram → Send a text message** (*Resource:* Message, *Operation:* Send Message):
 
@@ -612,7 +612,7 @@ Estos son mis comandos:
 Además, en **Add Field** busca **Append n8n Attribution** y **desactívalo**: viene activado por defecto y añade una línea de "enviado con n8n" al mensaje.
 
 
-### 11.5 Nodos 4 y 5 · Edit Fields: el "papelito" con el prompt
+### 11.6 Nodos 4 y 5 · Edit Fields: el "papelito" con el prompt
 
 Las salidas **quiz** y **cyber** del Switch van cada una a un nodo **Edit Fields (Set)**. Este nodo solo hace una cosa: guarda un texto con un nombre. Aquí, el nombre es **`systemPrompt`**, y es lo que el nodo de Groq va a leer.
 
@@ -655,7 +655,7 @@ You are a cybersecurity interviewer preparing a candidate for a junior-to-mid le
 
 **Cómo comprobar que quedó bien:** el texto lleva `{{ ... }}`, así que debe estar en modo **Expression**. Si lo está, debajo del campo aparece una vista previa del **Resultado** con un tema ya elegido. Si ves los corchetes y las llaves literales, cambia el campo de **Fixed** a **Expression**.
 
-### 11.6 Nodo 6 · HTTP Request a Groq (compartido)
+### 11.7 Nodo 6 · HTTP Request a Groq (compartido)
 
 Conecta **las salidas de los dos nodos de prompt** a este único nodo. n8n permite varias conexiones entrantes al mismo nodo, y solo se ejecuta la rama que se activó.
 
@@ -693,7 +693,7 @@ Conecta **las salidas de los dos nodos de prompt** a este único nodo. n8n permi
   <img src="docs/HTTPSrequest.png" alt="Configuración del nodo HTTP Request hacia Groq con el body JSON" width="500"><br>
 </p>
 
-### 11.7 Nodo 7 · Code (parsear y validar)
+### 11.8 Nodo 7 · Code (parsear y validar)
 
 La respuesta de Groq llega como **texto** dentro de `choices[0].message.content`. Este nodo la convierte en datos utilizables y **comprueba que sean correctos** antes de enviarlos.
 
@@ -727,7 +727,7 @@ return [{ json: q }];
 | `return [{ json: q }]` | Entrega el objeto al siguiente nodo. |
 
 
-### 11.8 Nodo 8 · HTTP Request: `sendPoll` de Telegram
+### 11.9 Nodo 8 · HTTP Request: `sendPoll` de Telegram
 
 Envía la pregunta como **quiz**. Se usa HTTP Request porque el nodo nativo de Telegram no incluye la opción de encuestas tipo quiz.
 
@@ -1366,6 +1366,7 @@ Si tu n8n de Windows conserva workflows **publicados** de pruebas anteriores, al
 
 ## 25.  Licencia y autoría
 
-Proyecto con fines educativos. Antes de publicarlo, agrega un archivo `LICENSE` con la licencia que prefieras (MIT es una opción habitual para proyectos de este tipo).
+Proyecto con fines educativos. Diagramas hechos con draw.io. Antes de publicarlo, agrega un archivo `LICENSE` con la licencia que prefieras (MIT es una opción habitual para proyectos de este tipo).
 
 **Autor:** [@JeAleCast7](https://github.com/JeAleCast7)
+
