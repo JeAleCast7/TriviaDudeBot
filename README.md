@@ -791,8 +791,7 @@ Debes ver algo así (sin `last_error_message`):
 > [!IMPORTANT]
 > Telegram solo admite **un webhook por bot**. Si el mismo workflow está publicado en dos n8n (por ejemplo, el de Windows y el del servidor), **se quitan el webhook uno al otro**.
 
-<br>
-<br>
+<br><br>
 
 # PARTE II · Producción en Ubuntu Server
 
@@ -832,52 +831,38 @@ Selecciona la VM → **Configuración → Red → Adaptador 1**:
 Así la VM recibe una IP de tu **red local** y puedes entrar a ella desde Windows.
 
 <p align="center">
-  <img src="docs/images/30-virtualbox-red-puente.png" alt="Configuración de red de la VM en modo adaptador puente" width="650"><br>
-  <sub><b>Figura 30.</b> Adaptador de red en modo puente.</sub>
+  <img src="docs/VMpuente.png" width="500"><br>
 </p>
-
-> [!TIP]
-> Si el modo puente no obtiene IP (a veces ocurre con Wi-Fi), usa **NAT con reenvío de puertos**: ver [sección 14](#ssh).
 
 ---
 
 <a id="ubuntu"></a>
 
-## 13. 🐧 Instalar Ubuntu Server
+## 13. <img src="docs/icons/linux.svg"> Instalar Ubuntu Server
 
 Inicia la VM. El instalador se maneja **solo con el teclado**: flechas para moverte, **Espacio** para marcar y **Enter** para continuar.
 
 | # | Pantalla | Qué elegir |
 |---|----------|------------|
-| 1 | Idioma / Teclado | El que prefieras. El inglés es habitual en servidores; en teclado, el de tu equipo (por ejemplo *Spanish / Latin American*). |
+| 1 | Idioma / Teclado | El inglés es habitual en servidores. |
 | 2 | Tipo de instalación | **Ubuntu Server** (no la versión minimizada). |
 | 3 | Red | Déjala en DHCP; debe mostrar una IP `192.168.x.x` (o similar). |
-| 4 | Proxy y mirror | Sin cambios. |
+| 4 | Proxy y mirror | N/A. |
 | 5 | Almacenamiento | Usar todo el disco con las opciones por defecto y confirmar. Es el **disco virtual**, no tu disco real. |
 | 6 | Perfil | Tu nombre, nombre del servidor (`ubuntu-server`), **usuario y contraseña** (anótalos). |
 | 7 | Ubuntu Pro | *Skip*. |
 | 8 | **SSH** | Marca con Espacio **Install OpenSSH server**. Es clave para controlarlo desde Windows. |
-| 9 | Featured snaps | **No selecciones ninguno** (Docker lo instalamos aparte). |
+| 9 | Featured snaps | N/A |
 
-Espera a que termine y pulsa **Reboot Now**.
-
-<p align="center">
-  <img src="docs/images/31-ubuntu-instalador-ssh.png" alt="Instalador de Ubuntu Server con OpenSSH server marcado" width="650"><br>
-  <sub><b>Figura 31.</b> Instalador: opción <i>Install OpenSSH server</i> marcada.</sub>
-</p>
+Esperar a que termine y pulsa **Reboot Now**.
 
 **Si al reiniciar vuelve a aparecer el instalador**, expulsa la ISO: en la ventana de la VM, menú **Dispositivos → Unidades ópticas → Quitar disco de la unidad virtual**, y reinicia.
-
-Al terminar verás `ubuntu-server login:`. Entra con tu usuario y contraseña (al escribir la contraseña **no se ve nada**: es normal).
-
-> [!NOTE]
-> **Durante la instalación** puede aparecer en rojo `watchdog: BUG: soft lockup - CPU#0 stuck for 39s`. Es un aviso del kernel muy común en VMs cuando el PC anfitrión está ocupado, **no** significa que haya fallado. Si el instalador se queda en *"downloading and installing security updates"* más de 10-15 minutos, usa el botón **Cancel update and reboot** (con `Tab` hasta resaltarlo y `Enter`): las actualizaciones se hacen después con `apt`.
 
 ---
 
 <a id="ssh"></a>
 
-## 14. 🔌 Conectarte por SSH desde Windows
+## 14. <img src="docs/icons/powershell.svg" width="34"> → <img src="docs/icons/bash.svg" width="30"> Conectarte por SSH desde Windows
 
 **SSH** te permite escribir comandos en el servidor desde PowerShell, con copiar y pegar, mucho más cómodo que la consola de VirtualBox.
 
@@ -895,7 +880,7 @@ ip -4 a
 | `-4` | Muestra solo direcciones IPv4. |
 | `a` | Abreviatura de `address`: lista las interfaces y sus IP. |
 
-Busca la línea `inet 192.168.x.x/24` de la interfaz principal (algo como `enp0s3`). Esa es la IP del servidor.
+La línea `inet 192.168.x.x/24` de la interfaz principal (algo como `enp0s3`). Esa es la IP del servidor.
 
 ### 14.2 Conectarte
 
@@ -914,11 +899,6 @@ ssh TU_USUARIO@IP_DEL_SERVIDOR
 - La primera vez pregunta si confías en la huella del servidor: escribe `yes`.
 - Luego pide la contraseña (tampoco se ve al escribirla).
 - Si todo va bien, verás el mensaje de bienvenida de Ubuntu y un prompt `usuario@ubuntu-server:~$`.
-
-<p align="center">
-  <img src="docs/images/32-ssh-conexion.png" alt="Sesión SSH conectada al servidor Ubuntu desde PowerShell" width="650"><br>
-  <sub><b>Figura 32.</b> Conexión SSH exitosa al servidor.</sub>
-</p>
 
 Para salir de la sesión: `exit`.
 
@@ -943,57 +923,11 @@ ssh -p 2222 TU_USUARIO@127.0.0.1
 
 <a id="rendimiento"></a>
 
-## 15. 🐢 Rendimiento de la VM
-
-Si la VM va muy lenta aunque tengas buena RAM, la causa casi siempre es **Hyper-V**: WSL 2 y Docker Desktop lo activan en Windows, y VirtualBox pasa a funcionar en un modo de compatibilidad bastante más lento.
-
-**1. Confirma el diagnóstico.** Con la VM encendida, mira la esquina inferior derecha de su ventana: un icono de **tortuga verde** indica ese modo lento.
-
-**2. Libera recursos.** Cierra Docker Desktop (icono de la bandeja → *Quit*) y ejecuta en PowerShell:
-
-```powershell
-wsl --shutdown
-```
-
-Para limitar lo que consume WSL, crea `C:\Users\TU_USUARIO\.wslconfig`:
-
-```ini
-[wsl2]
-memory=4GB
-processors=2
-```
-
-**3. Ajustes de la VM** (apagada): *Sistema → Procesador:* 2 CPU · *Pantalla:* memoria de vídeo 16 MB, controlador **VMSVGA**, sin aceleración 3D · *Almacenamiento → controlador SATA:* marcar **Usar caché de E/S del host**.
-
-**4. Solución definitiva (con una contrapartida).** Apagar Hyper-V mientras usas VirtualBox. En PowerShell **como administrador**:
-
-```powershell
-bcdedit /set hypervisorlaunchtype off
-```
-
-Reinicia Windows. Si la tortuga no desaparece, desactiva también *Seguridad de Windows → Seguridad del dispositivo → Aislamiento del núcleo → Integridad de la memoria* y reinicia.
-
-Para volver a usar Docker Desktop:
-
-```powershell
-bcdedit /set hypervisorlaunchtype auto
-```
-
-> [!NOTE]
-> Mientras Hyper-V esté apagado, **Docker Desktop y WSL 2 no funcionan**. Como el servidor ejecuta su propio Docker dentro de la VM, para el uso diario del bot ya no necesitas Docker Desktop.
-
-**5. Arranque lento de Ubuntu esperando la red.** Si se queda cerca de 2 minutos en *"A start job is running for Wait for Network to be Configured"*, dentro del servidor:
-
-```bash
-sudo systemctl disable systemd-networkd-wait-online.service
-sudo systemctl mask systemd-networkd-wait-online.service
-```
-
 ---
 
 <a id="docker-ubuntu"></a>
 
-## 16. 🐳 Instalar Docker en Ubuntu
+## 15. <img src="docs/icons/docker.svg" width="30"> → <img src="docs/icons/ubuntu.svg" width="30"> Instalar Docker en Ubuntu
 
 Entra al servidor por SSH. Vas a decirle a Ubuntu **de dónde descargar Docker** y **cómo comprobar que los paquetes son auténticos**.
 
@@ -1018,8 +952,6 @@ sudo chmod a+r /etc/apt/keyrings/docker.asc
 | `curl -fsSL ... -o ...docker.asc` | Descarga la **clave pública GPG de Docker**. `-f`: no guardar páginas de error; `-s`: silencioso; `-S`: mostrar errores aun así; `-L`: seguir redirecciones; `-o`: dónde guardar. |
 | `chmod a+r ...docker.asc` | Da permiso de **lectura a todos**, necesario para que `apt` pueda leer la clave. |
 
-> [!TIP]
-> Durante el `upgrade` puede aparecer una pantalla con un recuadro (*Daemons using outdated libraries*, *Pending kernel upgrade*). Es normal: pulsa **Enter**. Si te indica que hace falta reiniciar, ejecuta `sudo reboot`, espera un minuto y vuelve a entrar por SSH.
 
 Para confirmar que la clave quedó guardada:
 
@@ -1085,17 +1017,13 @@ docker compose version
 ```
 
 Si aparece **"Hello from Docker!"** y la versión de Compose, el servidor está listo.
-
-<p align="center">
-  <img src="docs/images/33-docker-hello-world-ubuntu.png" alt="Salida de docker run hello-world en el servidor Ubuntu" width="650"><br>
-  <sub><b>Figura 33.</b> Docker funcionando en el servidor.</sub>
-</p>
+  
 
 ---
 
 <a id="migracion"></a>
 
-## 17. 🚚 Migrar n8n al servidor
+## 17. <img src="docs/icons/n8n.svg" width="30"> →  <img src="docs/icons/ubuntu.svg" width="30">Migrar n8n al servidor
 
 La estrategia es **copiar toda la carpeta de datos** de n8n (workflows, credenciales y clave de cifrado) al servidor. Así **no tienes que recrear nada**.
 
@@ -1142,13 +1070,6 @@ sudo chown -R 1000:1000 ~/n8n-data
 
 Debes ver al menos `config` y `database.sqlite`. `chown -R 1000:1000` asigna todo el contenido al usuario con ID 1000 (el que usa n8n en el contenedor).
 
-<p align="center">
-  <img src="docs/images/34-scp-copia-datos.png" alt="Copia de la carpeta de datos de n8n al servidor con scp" width="650"><br>
-  <sub><b>Figura 34.</b> Copia de la carpeta de datos con <code>scp</code> y verificación con <code>ls -la</code>.</sub>
-</p>
-
-> [!CAUTION]
-> `config` guarda la clave de cifrado y la base de datos guarda tus credenciales. No los compartas ni los subas a GitHub.
 
 ### 17.3 Instalar `cloudflared` en el servidor
 
@@ -1174,10 +1095,6 @@ cloudflared tunnel --url http://localhost:5678
 
 Copia la URL `https://...trycloudflare.com` y **deja esa ventana abierta**.
 
-<p align="center">
-  <img src="docs/images/35-cloudflared-tunel-servidor.png" alt="Túnel de cloudflared corriendo en el servidor Ubuntu" width="650"><br>
-  <sub><b>Figura 35.</b> Túnel del servidor (ventana SSH que debe permanecer abierta).</sub>
-</p>
 
 ### 17.5 Crear el compose y el `.env` en el servidor
 
@@ -1236,11 +1153,6 @@ Busca en los registros:
 
 Los avisos sobre *deprecations*, el *Python task runner* y los permisos del archivo `config` son informativos y no impiden el funcionamiento.
 
-<p align="center">
-  <img src="docs/images/36-logs-n8n-servidor.png" alt="Registros de n8n en el servidor mostrando que el editor está accesible" width="650"><br>
-  <sub><b>Figura 36.</b> Registros de n8n arrancando en el servidor.</sub>
-</p>
-
 ### 17.7 Publicar el workflow en el servidor
 
 En los registros iniciales puede aparecer **`0 published workflows`**: el workflow se copió, pero hay que **publicarlo** para que registre el webhook.
@@ -1273,7 +1185,7 @@ El campo `url` debe empezar con **la URL del túnel del servidor** y no debe hab
 
 <a id="operacion"></a>
 
-## 18. 🔁 Operación diaria: cuando cambia la URL del túnel
+## 18. Cuando cambia la URL del túnel
 
 Con los túneles rápidos y gratuitos de Cloudflare, **la URL cambia cada vez que el túnel se reinicia**. Si no actualizas `WEBHOOK_URL`, Telegram sigue enviando los mensajes a una dirección que ya no existe: el bot parece "muerto" y, al intentar escuchar eventos de prueba, n8n puede mostrar:
 
@@ -1294,19 +1206,12 @@ Cuatro cosas deben mostrar **exactamente el mismo dominio** (`algo-algo-algo.try
 
 Si una no coincide, ahí está el problema. Las cuatro cosas están encadenadas: cada una **sale de la anterior**, y el contenedor no se entera de que cambiaste el archivo hasta que lo **recreas**.
 
-<p align="center">
-  <img src="docs/images/39-test-url-trigger.png" alt="Telegram Trigger mostrando la Test URL con el dominio del túnel" width="650"><br>
-  <sub><b>Figura 39.</b> Test URL del Telegram Trigger: su dominio debe coincidir con el del túnel.</sub>
-</p>
 
 | Situación | ¿Hay que repetir el proceso? |
 |-----------|------------------------------|
 | Cierras la ventana del túnel o reinicias `cloudflared` | **Sí** |
 | Reinicias el servidor, la VM o tu PC | **Sí** (el contenedor arranca solo, el túnel no) |
 | Pierdes internet un rato y `cloudflared` sigue corriendo | **No**: se reconecta con la misma URL |
-
-> [!IMPORTANT]
-> **No cierres ni reinicies la ventana del túnel mientras haces el cambio.** Si lo haces, el dominio cambia otra vez y las cuatro direcciones vuelven a descuadrarse.
 
 ### 18.2 ¿Dónde está escrita tu URL? Averígualo primero
 
@@ -1411,71 +1316,15 @@ docker compose exec n8n printenv WEBHOOK_URL
 
 **4. Recargar el editor.** Abre `http://localhost:5678` (esa dirección exacta, **no** la IP del servidor), pulsa **`Ctrl+F5`**, abre el Telegram Trigger y comprueba que la Test URL empiece con el dominio de tu túnel.
 
-> [!NOTE]
-> **¿El editor sigue mostrando un dominio viejo?** El editor muestra exactamente lo que el contenedor tiene en `WEBHOOK_URL`. Si no coincide con tu túnel, casi siempre es una de estas tres cosas: estás mirando el editor **del servidor** (revisa la barra de direcciones), no recreaste el contenedor tras editar el archivo, o el túnel que está abierto es **otro** (cada reinicio crea un dominio nuevo).
-
-### 18.5 Verificar de punta a punta
-
-1. **El túnel responde:** abre `https://TU-DOMINIO.trycloudflare.com` en el navegador; debe cargar n8n.
-2. **El dominio es visible para Telegram.** Un dominio recién creado a veces tarda un poco en propagarse. Desde PowerShell, usando solo el dominio (sin `https://` ni `/`):
-   ```powershell
-   nslookup TU-DOMINIO.trycloudflare.com 8.8.8.8
-   ```
-   Si devuelve una dirección IP, está listo. Si dice que no existe, espera uno o dos minutos y repite; si sigue igual, reinicia el túnel (generará otra URL) y repite desde el paso 1.
-3. **Telegram tiene el webhook correcto:** abre `https://api.telegram.org/botTU_TOKEN/getWebhookInfo`. El `url` debe empezar con el dominio nuevo y no debe haber `last_error_message`.
-4. Si el `url` sigue siendo el viejo o está vacío, en el editor pulsa **Unpublish** y luego **Publish** para forzar el registro.
-5. Prueba `/start` en Telegram.
-
-> [!TIP]
-> Las opciones para **evitar este ciclo** (dominio propio con túnel con nombre, un dominio estático gratuito de otro proveedor o *polling*) están en la [hoja de ruta](#roadmap).
-
 ---
 
 <a id="mantenimiento"></a>
-
-## 19. 🛠️ Mantenimiento
-
-**Aprovechar todo el disco.** El instalador de Ubuntu suele asignar solo parte del disco al sistema (por ejemplo, ~13 GB de 30 GB). Para ampliarlo sin reiniciar:
-
-```bash
-sudo lvextend -r -l +100%FREE /dev/ubuntu-vg/ubuntu-lv
-df -h /
-```
-
-Si el primer comando da error de ruta, ejecuta `lsblk` para ver los nombres reales de tus volúmenes.
-
-**Limpiar kernels antiguos:**
-
-```bash
-sudo apt autoremove -y
-```
-
-**Respaldos.** Copia de vez en cuando `~/n8n-data` (especialmente el archivo `config`) a un lugar seguro **fuera del repositorio**.
-
-**IP fija.** El servidor obtiene su IP por DHCP y puede cambiar al reiniciar. Lo más sencillo es **reservar esa IP para la VM en el router**, o configurar una IP estática en Ubuntu.
-
-**Disponibilidad.** El bot solo está disponible mientras tu PC, la VM, Docker y el túnel estén encendidos.
-
----
 
 # PARTE III · Cierre
 
 <a id="dos-entornos"></a>
 
-## 20. 🔀 Trabajar con dos entornos (servidor ↔ Windows)
-
-Con el tiempo es normal querer el mismo workflow en **dos sitios**: el servidor Ubuntu (donde corre "en serio") y el n8n de Docker Desktop en tu PC (donde editas y pruebas). Esta sección explica cómo moverlo sin sustos.
-
-### 20.1 Las dos reglas que lo explican todo
-
-> [!IMPORTANT]
-> **Regla 1: las credenciales no viajan con el workflow.** Al exportar, el archivo solo guarda una **referencia** al nombre de cada credencial. En el n8n de destino tendrás que crear de nuevo la de Groq y la de Telegram.
->
-> **Regla 2: Telegram solo admite un webhook por bot.** Si el mismo workflow está **publicado** en dos n8n, cada uno le quita el webhook al otro. Mientras uno de ellos esté publicado, el otro debe quedarse **sin publicar**.
-
-La forma sencilla de pensarlo: **un n8n es producción** (publicado, con túnel) y **el otro es taller** (sin publicar). Puedes cambiar los papeles cuando quieras, pero de a uno por vez.
-
-### 20.2 Exportar el workflow
+## 19. Exportar el workflow
 
 1. Abre el editor del n8n de origen y el workflow de TriviaDudeBot.
 2. Menú **⋯** (arriba a la derecha) → **Download**. Se guarda un `.json` en tu carpeta de Descargas.
@@ -1518,23 +1367,11 @@ Si tu n8n de Windows conserva workflows **publicados** de pruebas anteriores, al
 3. Abre `http://localhost:5678`. Es posible que aparezcan avisos al activar workflows: es esperable, por la URL muerta.
 4. Haz **Unpublish** de cualquier copia vieja de un workflow que siga publicada.
 
-> [!NOTE]
-> Si Docker Desktop no arranca porque apagaste Hyper-V para acelerar la VM, se revierte con `bcdedit /set hypervisorlaunchtype auto` (PowerShell como administrador) y reiniciando Windows. La VM volverá a ir más lenta (ver [sección 15](#rendimiento)).
-
 ### 20.5 Probar en Windows y devolver el webhook
 
 - **Sin tocar el webhook (lo más seguro):** edita el workflow y prueba **nodos sueltos** (por ejemplo, ejecutar solo el Code), sin publicar.
-- **Probando el Telegram Trigger completo:** necesitas un túnel propio y el procedimiento de la [sección 18.4](#operacion). Mientras pruebas, el webhook del bot está en Windows.
+- **Probando el Telegram Trigger completo:** necesitas un túnel propio y el procedimiento. Mientras pruebas, el webhook del bot está en Windows.
 - **Al terminar,** cierra el túnel de Windows (`Ctrl+C`), detén el n8n de Windows (`docker compose stop`) y, en el editor del servidor, haz **Unpublish** y luego **Publish** del workflow. Comprueba con `getWebhookInfo` que el `url` sea el del túnel del servidor.
-
-
-
----
-
-<a id="capturas"></a>
-
-> [!CAUTION]
-> Antes de subir las capturas, **tapa o difumina** tokens, API keys, tu `chat_id`, la IP del servidor, correos y cualquier dato personal.
 
 ---
 
