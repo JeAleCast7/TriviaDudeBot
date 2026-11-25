@@ -54,7 +54,7 @@ style="border-radius: 24px;">
 |---|---------|-----------------|
 | 1 | [¿Qué es TriviaDudeBot?](#que-es) | Los tres comandos y aprendizajes |
 | 2 | [Arquitectura](#arquitectura) | Diagramas del flujo y de la infraestructura |
-| 3 | [Conceptos clave](#conceptos) | Glosario de terminos |
+| 3 | [Keywords](#keywords) | Glosario de terminos |
 | 4 | [Requisitos](#requisitos) | Lo que necesitas antes de empezar |
 | 5 | [Estructura del repositorio](#estructura) | Qué archivo hace qué |
 | | **PARTE I · Desarrollo en Windows** | |
@@ -128,7 +128,7 @@ Con `/start` el recorrido es más corto: el Switch envía directamente el mensaj
 
 <img src="docs/dondeVive.png">
 
-<a id="conceptos"></a>
+<a id="keywords"></a>
 
 ## 3.  Conceptos clave
 
