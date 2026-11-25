@@ -995,9 +995,6 @@ sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin d
 sudo usermod -aG docker $USER
 ```
 
-> [!NOTE]
-> En el `apt update` busca líneas con `download.docker.com`: si aparece `Get:` o `Hit:`, el repositorio funciona. Si ves `404 Not Found` o *does not have a Release file*, Docker aún no publica paquetes para tu versión de Ubuntu; en ese caso puedes instalar `docker.io` y `docker-compose-v2` desde los repositorios de Ubuntu.
-
 | Paquete | Qué es |
 |---------|--------|
 | `docker-ce` | El motor de Docker. |
@@ -1169,17 +1166,7 @@ Abre:
 https://api.telegram.org/botTU_TOKEN_AQUI/getWebhookInfo
 ```
 
-El campo `url` debe empezar con **la URL del túnel del servidor** y no debe haber `last_error_message`. Después escribe **`/quiz`** a tu bot: ¡el quiz llega desde tu servidor Ubuntu! 🎉
-
-<p align="center">
-  <img src="docs/images/37-getwebhookinfo.png" alt="Respuesta de getWebhookInfo con la URL del túnel del servidor" width="650"><br>
-  <sub><b>Figura 37.</b> <code>getWebhookInfo</code> mostrando el webhook registrado (oculta el token).</sub>
-</p>
-
-<p align="center">
-  <img src="docs/images/38-bot-funcionando-servidor.png" alt="TriviaDudeBot respondiendo desde el servidor Ubuntu" width="320"><br>
-  <sub><b>Figura 38.</b> TriviaDudeBot respondiendo desde el servidor.</sub>
-</p>
+El campo `url` debe empezar con **la URL del túnel del servidor** y no debe haber `last_error_message`. Después escribe **`/quiz`** a tu bot: el quiz llega desde el servidor Ubuntu!
 
 ---
 
