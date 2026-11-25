@@ -70,10 +70,10 @@ style="border-radius: 24px;">
 | 14 | [Conectarte por SSH](#ssh) | IP, `ssh`, y alternativa con NAT |
 | 15 | [Instalar Docker en Ubuntu](#docker-ubuntu) | Cada comando explicado |
 | 16 | [Migrar n8n al servidor](#migracion) | `scp`, permisos, compose, túnel y publicación |
-| 17 | [Operación diaria: cuando cambia la URL del túnel](#operacion) | Servidor Linux y Windows, paso a paso |
+| 17 | [Cuando cambia la URL del túnel](#operacion) | Servidor Linux y Windows, paso a paso |
 | | **PARTE III · Cierre** | |
-| 19 | [Exportar el workflow](#exportar) | Exportar, importar y no pelear por el webhook |
-| 20 | [Licencia y autoría](#licencia) | |
+| 18 | [Exportar el workflow](#exportar) | Exportar, importar y no pelear por el webhook |
+| 19 | [Licencia y autoría](#licencia) | |
 
 
 <a id="que-es"></a>
@@ -1172,7 +1172,7 @@ El campo `url` debe empezar con **la URL del túnel del servidor** y no debe hab
 
 <a id="operacion"></a>
 
-## 18. Cuando cambia la URL del túnel
+## 17. Cuando cambia la URL del túnel
 
 Con los túneles rápidos y gratuitos de Cloudflare, **la URL cambia cada vez que el túnel se reinicia**. Si no actualizas `WEBHOOK_URL`, Telegram sigue enviando los mensajes a una dirección que ya no existe: el bot parece "muerto" y, al intentar escuchar eventos de prueba, n8n puede mostrar:
 
@@ -1180,7 +1180,7 @@ Con los túneles rápidos y gratuitos de Cloudflare, **la URL cambia cada vez qu
 Bad Request: bad webhook: Failed to resolve host: Name or service not known
 ```
 
-### 18.1 La regla de las cuatro direcciones
+### 17.1 La regla de las cuatro direcciones
 
 Cuatro cosas deben mostrar **exactamente el mismo dominio** (`algo-algo-algo.trycloudflare.com`):
 
@@ -1200,7 +1200,7 @@ Si una no coincide, ahí está el problema. Las cuatro cosas están encadenadas:
 | Reinicias el servidor, la VM o tu PC | **Sí** (el contenedor arranca solo, el túnel no) |
 | Pierdes internet un rato y `cloudflared` sigue corriendo | **No**: se reconecta con la misma URL |
 
-### 18.2 ¿Dónde está escrita tu URL? Averígualo primero
+### 17.2 ¿Dónde está escrita tu URL? Averígualo primero
 
 Hay dos formas de tener la URL, y el comando depende de cuál usas. Entra a la carpeta del compose y mira:
 
@@ -1213,7 +1213,7 @@ grep WEBHOOK_URL docker-compose.yml
 - Si la línea dice `WEBHOOK_URL=${WEBHOOK_URL:?...}` → la URL está en el archivo **`.env`**.
 - Si la línea dice `WEBHOOK_URL=https://...trycloudflare.com/` → la URL está **escrita dentro del `docker-compose.yml`**, y no existe ningún `.env`. (Si intentas editar un `.env` que no existe, verás `No such file or directory`).
 
-### 18.3 En el servidor Ubuntu (Linux)
+### 17.3 En el servidor Ubuntu (Linux)
 
 **1. Abrir el túnel y copiar la URL nueva** (en una sesión SSH que queda abierta):
 
@@ -1260,7 +1260,7 @@ grep -o 'https://[a-z0-9-]*\.trycloudflare\.com' ~/cloudflared.log | head -1
 
 El último comando imprime la URL. Este túnel sobrevive al cierre de SSH, pero **no** a un reinicio del servidor.
 
-### 18.4 En Windows (PowerShell)
+### 17.4 En Windows (PowerShell)
 
 Los comandos de Linux (`sed`, `grep`, `~`) **no existen en PowerShell**. Estos son los equivalentes.
 
@@ -1309,9 +1309,9 @@ docker compose exec n8n printenv WEBHOOK_URL
 
 <a id="exportar"></a>
 
-## 19. Exportar el workflow
+## 18. Exportar el workflow
 
-### 19.1 Exportar en JSON
+### 18.1 Exportar en JSON
 
 1. Abre el editor del n8n de origen y el workflow de TriviaDudeBot.
 2. Menú **⋯** (arriba a la derecha) → **Download**. Se guarda un `.json` en tu carpeta de Descargas.
@@ -1320,7 +1320,7 @@ docker compose exec n8n printenv WEBHOOK_URL
 
 ---
 
-### 19.2 Importar en el otro n8n
+### 18.2 Importar en el otro n8n
 
 1. Abre el n8n de destino (por ejemplo `http://localhost:5678` para el de Windows) y crea un **workflow nuevo**.
 2. Menú **⋯** → **Import from file** y elige el `.json`.
@@ -1335,7 +1335,7 @@ docker compose exec n8n printenv WEBHOOK_URL
 
 El nodo `sendPoll` ya trae el token en su URL porque viajó dentro del JSON.
 
-### 19.3 Arrancar el n8n de Windows sin quitarle el webhook al servidor
+### 18.3 Arrancar el n8n de Windows sin quitarle el webhook al servidor
 
 Si tu n8n de Windows conserva workflows **publicados** de pruebas anteriores, al arrancar con un túnel activo podrían registrar su webhook y quitárselo al servidor. Para evitarlo:
 
@@ -1348,7 +1348,7 @@ Si tu n8n de Windows conserva workflows **publicados** de pruebas anteriores, al
 3. Abre `http://localhost:5678`. Es posible que aparezcan avisos al activar workflows: es esperable, por la URL muerta.
 4. Haz **Unpublish** de cualquier copia vieja de un workflow que siga publicada.
 
-### 19.4 Probar en Windows y devolver el webhook
+### 18.4 Probar en Windows y devolver el webhook
 
 - **Sin tocar el webhook (lo más seguro):** edita el workflow y prueba **nodos sueltos** (por ejemplo, ejecutar solo el Code), sin publicar.
 - **Probando el Telegram Trigger completo:** necesitas un túnel propio y el procedimiento. Mientras pruebas, el webhook del bot está en Windows.
@@ -1358,7 +1358,7 @@ Si tu n8n de Windows conserva workflows **publicados** de pruebas anteriores, al
 
 <a id="licencia"></a>
 
-## 20.  Licencia y autoría
+## 19.  Licencia y autoría
 
 Proyecto con fines educativos. Diagramas hechos con draw.io. Antes de publicarlo, agrega un archivo `LICENSE` con la licencia que prefieras (MIT es una opción habitual para proyectos de este tipo).
 
