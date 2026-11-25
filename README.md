@@ -600,7 +600,7 @@ Conecta la salida **start** a un nodo **Telegram → Send a text message** (*Res
 **Text:**
 
 ```text
-👋 ¡Hola! Soy TriviaDudeBot.
+🗿 ¡Hola! Soy TriviaDudeBot.
 
 Estos son mis comandos:
 
@@ -640,8 +640,7 @@ You are a cybersecurity interviewer preparing a candidate for a junior-to-mid le
 ```
 
 <p align="center">
-  <img src="docs/images/21-nodo-prompt-cyber.png" alt="Nodo Edit Fields con el campo systemPrompt del quiz de ciberseguridad" width="650"><br>
-  <sub><b>Figura 21.</b> Nodo <code>Prompt cyber</code>: campo <code>systemPrompt</code> y vista previa del resultado.</sub>
+  <img src="docs/promptCyber.png" alt="Nodo Edit Fields con el campo systemPrompt del quiz de ciberseguridad" width="500"><br>
 </p>
 
 | Parte del prompt | Para qué sirve |
@@ -654,7 +653,7 @@ You are a cybersecurity interviewer preparing a candidate for a junior-to-mid le
 > [!NOTE]
 > El formato JSON se describe **con palabras** y no con llaves `{ }` a propósito: dentro de un campo de n8n, las llaves pueden confundirse con las expresiones `{{ }}`.
 
-**Cómo comprobar que quedó bien:** el texto lleva `{{ ... }}`, así que debe estar en modo **Expression**. Si lo está, debajo del campo aparece una vista previa del **Resultado** con un tema ya elegido (por ejemplo `Topic: idioms.`). Si ves los corchetes y las llaves literales, cambia el campo de **Fixed** a **Expression**.
+**Cómo comprobar que quedó bien:** el texto lleva `{{ ... }}`, así que debe estar en modo **Expression**. Si lo está, debajo del campo aparece una vista previa del **Resultado** con un tema ya elegido. Si ves los corchetes y las llaves literales, cambia el campo de **Fixed** a **Expression**.
 
 ### 11.6 Nodo 6 · HTTP Request a Groq (compartido)
 
@@ -691,12 +690,8 @@ Conecta **las salidas de los dos nodos de prompt** a este único nodo. n8n permi
 | `{{ JSON.stringify($json.systemPrompt) }}` | **La clave de la reutilización:** toma el campo `systemPrompt` que dejó el nodo anterior (inglés o cyber) y lo inserta de forma segura dentro del JSON. |
 
 <p align="center">
-  <img src="docs/images/22-nodo-groq.png" alt="Configuración del nodo HTTP Request hacia Groq con el body JSON" width="650"><br>
-  <sub><b>Figura 22.</b> Nodo HTTP Request hacia Groq (compartido por <code>/quiz</code> y <code>/cyber</code>).</sub>
+  <img src="docs/HTTPSrequest.png" alt="Configuración del nodo HTTP Request hacia Groq con el body JSON" width="500"><br>
 </p>
-
-> [!NOTE]
-> Si pulsas **Execute step** en este nodo solo, fallará, porque no llegó ningún `systemPrompt`. Pruébalo ejecutando todo el flujo desde el trigger.
 
 ### 11.7 Nodo 7 · Code (parsear y validar)
 
@@ -731,47 +726,6 @@ return [{ json: q }];
 | Los dos `if` con `throw new Error` | Garantizan que haya **exactamente 4 opciones** y que `correct_index` sea un entero entre 0 y 3. Si no, el flujo falla con un mensaje claro en lugar de mandar un quiz roto. |
 | `return [{ json: q }]` | Entrega el objeto al siguiente nodo. |
 
-<p align="center">
-  <img src="docs/images/23-nodo-code.png" alt="Nodo Code con el script de validación y su salida" width="650"><br>
-  <sub><b>Figura 23.</b> Nodo Code y su salida (<code>question</code>, <code>options</code>, <code>correct_index</code>, <code>explanation</code>).</sub>
-</p>
-
-<details>
-<summary><b>🐍 ¿Se puede escribir este nodo en Python?</b></summary>
-
-<br>
-
-La traducción es directa:
-
-````python
-import json
-import re
-
-raw = _items[0]["json"]["choices"][0]["message"]["content"]
-raw = re.sub(r"```json|```", "", raw).strip()
-
-q = json.loads(raw)
-
-options = q.get("options")
-if not isinstance(options, list) or len(options) != 4:
-    raise ValueError("La IA no devolvió 4 opciones")
-
-idx = q.get("correct_index")
-if not isinstance(idx, int) or isinstance(idx, bool) or idx < 0 or idx > 3:
-    raise ValueError("correct_index inválido")
-
-return [{"json": q}]
-````
-
-**Pero con la configuración de esta guía no funcionaría.** Desde n8n 2.0, el Python del nodo Code corre como Python nativo en un *task runner* aparte, y la imagen oficial `n8nio/n8n` no incluye Python. Los registros de arranque del propio contenedor lo avisan:
-
-```text
-Failed to start Python task runner in internal mode. because Python 3 is missing from this system.
-```
-
-Además, según documentación de terceros (conviene verificarlo en la documentación oficial de n8n), ese runner bloquea por defecto los *imports* de la librería estándar, y este código necesita `json` y `re`. Para usar Python habría que añadir un contenedor *runner* con Python y configurar n8n en modo externo. **Para este proyecto, déjalo en JavaScript.**
-
-</details>
 
 ### 11.8 Nodo 8 · HTTP Request: `sendPoll` de Telegram
 
@@ -808,53 +762,13 @@ Envía la pregunta como **quiz**. Se usa HTTP Request porque el nodo nativo de T
 
 **Límites de Telegram:** pregunta máx. **300** caracteres, cada opción **100**, explicación **200**. Por eso los prompts piden longitudes más cortas.
 
-<p align="center">
-  <img src="docs/images/24-nodo-sendpoll.png" alt="Nodo HTTP Request que llama a sendPoll de Telegram" width="650"><br>
-  <sub><b>Figura 24.</b> Nodo <code>sendPoll</code>. (Oculta el token de la URL).</sub>
-</p>
-
-> [!CAUTION]
-> **El token de la URL debe ser el de TriviaDudeBot.** Si reciclaste este nodo de otro workflow y conserva el token de otro bot, el quiz se intenta enviar con el bot equivocado y Telegram responde `chat not found`. Es el error más común al reciclar nodos.
-
-> [!WARNING]
-> Ese token dentro de la URL es lo que más fácilmente se **filtra al exportar el workflow**. Revisa la [sección 21](#seguridad) antes de subir nada.
-
-### 11.9 Probar cada comando
-
-El modo prueba captura **un solo mensaje por cada clic** en *Execute workflow*, así que repite este proceso con cada comando:
-
-1. Pulsa **Execute workflow** (el Telegram Trigger se queda escuchando).
-2. Escribe el comando en Telegram: primero **`/start`**, luego **`/quiz`**, luego **`/cyber`**.
-3. En n8n verás cómo se ponen en verde los nodos del camino que tomó el mensaje.
-
-<p align="center">
-  <img src="docs/images/25-test-start.png" alt="Menú de comandos enviado por TriviaDudeBot al escribir /start" width="320"><br>
-  <sub><b>Figura 25.</b> Respuesta a <code>/start</code>: el menú de comandos.</sub>
-</p>
-
-<p align="center">
-  <img src="docs/images/26-test-quiz.png" alt="Quiz de inglés nivel B2 recibido en Telegram con su explicación" width="320"><br>
-  <sub><b>Figura 26.</b> Respuesta a <code>/quiz</code>: pregunta de inglés B2 con explicación.</sub>
-</p>
-
-<p align="center">
-  <img src="docs/images/27-test-cyber.png" alt="Quiz de ciberseguridad recibido en Telegram con su explicación" width="320"><br>
-  <sub><b>Figura 27.</b> Respuesta a <code>/cyber</code>: pregunta de ciberseguridad con explicación.</sub>
-</p>
-
-**Si el flujo se detiene antes de lo esperado**, abre el **Switch** y mira su **Output**: hay una pestaña por cada salida (`start`, `quiz`, `cyber`). Si todas están vacías, ninguna regla coincidió (casi siempre es el modo *Fixed* de la sección 11.3).
-
-### 11.10 Publicar el workflow
+### 11.9 Publicar el workflow
 
 El modo prueba registra un webhook **temporal**. Para que el bot responda solo, sin el editor abierto, hay que **publicar** (activar) el workflow:
 
 1. Arriba a la derecha, pulsa **Publish** (en versiones anteriores, el interruptor **Active**).
 2. Confirma en la ventana que aparece.
 
-<p align="center">
-  <img src="docs/images/28-publish.png" alt="Botón Publish del workflow en n8n" width="520"><br>
-  <sub><b>Figura 28.</b> Publicación del workflow.</sub>
-</p>
 
 **Comprueba que Telegram tiene registrado tu webhook** abriendo en el navegador:
 
@@ -875,15 +789,10 @@ Debes ver algo así (sin `last_error_message`):
 | `pending_update_count` | Mensajes pendientes de entregar. Debe ser 0 o muy bajo. |
 
 > [!IMPORTANT]
-> Telegram solo admite **un webhook por bot**. Si el mismo workflow está publicado en dos n8n (por ejemplo, el de Windows y el del servidor), **se quitan el webhook uno al otro**. La sección 20 explica cómo trabajar con los dos sin conflictos.
+> Telegram solo admite **un webhook por bot**. Si el mismo workflow está publicado en dos n8n (por ejemplo, el de Windows y el del servidor), **se quitan el webhook uno al otro**.
 
-### 11.11 Mejoras opcionales del workflow
-
-- **Salida de respaldo del Switch:** ver 11.3.
-- **Menú nativo de `/`:** ver `/setcommands` en 8.2.
-- **Restringir el bot a tu cuenta:** agrega un nodo **IF** entre el trigger y el Switch con la condición `{{ String($json.message.chat.id) }}` **is equal to** tu `chat_id`.
-
----
+<br>
+<br>
 
 # PARTE II · Producción en Ubuntu Server
 
