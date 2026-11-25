@@ -59,7 +59,7 @@ style="border-radius: 24px;">
 | 5 | [Estructura del repositorio](#estructura) | Qué archivo hace qué |
 | | **PARTE I · Desarrollo en Windows** | |
 | 6 | [Docker Desktop](#docker-desktop) | WSL 2, instalación y verificación |
-| 7 | [Descargar y ejecutar n8n](#n8n-pull) | `docker pull`, `docker run` y Docker Desktop |
+| 7 | [Instalar Docker Desktop descargar pull a n8n](#n8n-pull) | `docker pull`, `docker run` y Docker Desktop |
 | 8 | [Crear el bot (BotFather) y la API de Groq](#telegram-groq) | Token, menú de comandos, API key y modelo |
 | 9 | [El túnel público (Cloudflare)](#tunel) | Por qué Telegram lo necesita y cómo abrirlo |
 | 10 | [Pasar n8n a Docker Compose](#compose-windows) | `WEBHOOK_URL`, respaldo y migración del contenedor |
@@ -72,10 +72,9 @@ style="border-radius: 24px;">
 | 16 | [Instalar Docker en Ubuntu](#docker-ubuntu) | Cada comando explicado |
 | 17 | [Migrar n8n al servidor](#migracion) | `scp`, permisos, compose, túnel y publicación |
 | 18 | [Operación diaria: cuando cambia la URL del túnel](#operacion) | Servidor Linux y Windows, paso a paso |
-| 19 | [Mantenimiento](#mantenimiento) | Disco, respaldos, IP fija |
 | | **PARTE III · Cierre** | |
-| 20 | [Trabajar con dos entornos (servidor ↔ Windows)](#dos-entornos) | Exportar, importar y no pelear por el webhook |
-| 25 | [Licencia y autoría](#licencia) | |
+| 19 | [Exportar el workflow](#exportar) | Exportar, importar y no pelear por el webhook |
+| 20 | [Licencia y autoría](#licencia) | |
 
 
 <a id="que-es"></a>
@@ -237,9 +236,11 @@ Debe mostrarte las versiones de WSL y del kernel.
   <img src="docs/wsl2.png" width="250"><br>
 <sub> Ahora sale el logo de Linux en el explorador de archivos</sub>
 
+<a id="n8n-pull"></a>
+
 ## 7. <a href="https://www.docker.com/"> Instalar Docker Desktop </a> y descargar (`pull`) a n8n
 
-<a id="n8n-pull"></a>
+
 
 
 ### 7.1 Imagen vs. contenedor
@@ -1305,11 +1306,9 @@ docker compose exec n8n printenv WEBHOOK_URL
 
 ---
 
-<a id="mantenimiento"></a>
-
 # PARTE III · Cierre
 
-<a id="dos-entornos"></a>
+<a id="exportar"></a>
 
 ## 19. Exportar el workflow
 
@@ -1326,11 +1325,6 @@ docker compose exec n8n printenv WEBHOOK_URL
 1. Abre el n8n de destino (por ejemplo `http://localhost:5678` para el de Windows) y crea un **workflow nuevo**.
 2. Menú **⋯** → **Import from file** y elige el `.json`.
 3. Ponle nombre al workflow.
-
-<p align="center">
-  <img src="docs/images/40-import-workflow.png" alt="Menú del workflow en n8n con la opción Import from file" width="520"><br>
-  <sub><b>Figura 40.</b> Importar un workflow desde un archivo <code>.json</code>.</sub>
-</p>
 
 4. Crea las credenciales que faltan (los nodos mostrarán un aviso rojo o amarillo hasta asignarlas):
 
@@ -1364,7 +1358,7 @@ Si tu n8n de Windows conserva workflows **publicados** de pruebas anteriores, al
 
 <a id="licencia"></a>
 
-## 25.  Licencia y autoría
+## 20.  Licencia y autoría
 
 Proyecto con fines educativos. Diagramas hechos con draw.io. Antes de publicarlo, agrega un archivo `LICENSE` con la licencia que prefieras (MIT es una opción habitual para proyectos de este tipo).
 
