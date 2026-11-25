@@ -763,7 +763,7 @@ Envía la pregunta como **quiz**. Se usa HTTP Request porque el nodo nativo de T
 
 **Límites de Telegram:** pregunta máx. **300** caracteres, cada opción **100**, explicación **200**. Por eso los prompts piden longitudes más cortas.
 
-### 11.9 Publicar el workflow
+### 11.10 Publicar el workflow
 
 El modo prueba registra un webhook **temporal**. Para que el bot responda solo, sin el editor abierto, hay que **publicar** (activar) el workflow:
 
@@ -932,7 +932,7 @@ ssh -p 2222 TU_USUARIO@127.0.0.1
 
 Entra al servidor por SSH. Vas a decirle a Ubuntu **de dónde descargar Docker** y **cómo comprobar que los paquetes son auténticos**.
 
-### 16.1 Preparar el sistema y la clave de Docker
+### 15.1 Preparar el sistema y la clave de Docker
 
 ```bash
 sudo apt update && sudo apt upgrade -y
@@ -963,7 +963,7 @@ head -n 1 /etc/apt/keyrings/docker.asc
 
 Debe aparecer `docker.asc` y la primera línea debe ser `-----BEGIN PGP PUBLIC KEY BLOCK-----`.
 
-### 16.2 Agregar el repositorio oficial de Docker
+### 15.2 Agregar el repositorio oficial de Docker
 
 ```bash
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
@@ -988,7 +988,7 @@ cat /etc/apt/sources.list.d/docker.list
 
 Debe mostrar **una sola línea** con el nombre en clave de tu Ubuntu al final (antes de `stable`).
 
-### 16.3 Instalar Docker
+### 15.3 Instalar Docker
 
 ```bash
 sudo apt update
@@ -1005,7 +1005,7 @@ sudo usermod -aG docker $USER
 | `docker-compose-plugin` | Habilita `docker compose`. |
 | `usermod -aG docker $USER` | Agrega tu usuario al grupo `docker` para usarlo **sin `sudo`**. |
 
-### 16.4 Verificar
+### 15.4 Verificar
 
 Cierra la sesión (`exit`), vuelve a entrar por SSH (para que el grupo se aplique) y ejecuta:
 
@@ -1021,11 +1021,11 @@ Si aparece **"Hello from Docker!"** y la versión de Compose, el servidor está 
 
 <a id="migracion"></a>
 
-## 17. <img src="docs/icons/n8n.svg" width="30"> →  <img src="docs/icons/ubuntu.svg" width="30">Migrar n8n al servidor
+## 16. <img src="docs/icons/n8n.svg" width="30"> →  <img src="docs/icons/ubuntu.svg" width="30">Migrar n8n al servidor
 
 La estrategia es **copiar toda la carpeta de datos** de n8n (workflows, credenciales y clave de cifrado) al servidor. Así **no tienes que recrear nada**.
 
-### 17.1 Dejar el n8n de Windows apagado
+### 16.1 Dejar el n8n de Windows apagado
 
 Telegram solo admite **un webhook por bot**. Detén el n8n de Windows y **no lo vuelvas a encender** mientras pruebas el servidor, porque al arrancar reclamaría el webhook:
 
@@ -1036,7 +1036,7 @@ docker compose stop
 
 Cierra también la ventana del túnel de Windows (`Ctrl+C`): ya no se usa.
 
-### 17.2 Copiar los datos con `scp`
+### 16.2 Copiar los datos con `scp`
 
 En el servidor, comprueba tu ID de usuario:
 
@@ -1069,7 +1069,7 @@ sudo chown -R 1000:1000 ~/n8n-data
 Debes ver al menos `config` y `database.sqlite`. `chown -R 1000:1000` asigna todo el contenido al usuario con ID 1000 (el que usa n8n en el contenedor).
 
 
-### 17.3 Instalar `cloudflared` en el servidor
+### 16.3 Instalar `cloudflared` en el servidor
 
 ```bash
 curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
@@ -1083,7 +1083,7 @@ cloudflared --version
 | `sudo dpkg -i cloudflared.deb` | Instala el paquete. Se usa el `.deb` directo porque en Ubuntu muy recientes el repositorio de Cloudflare puede no estar disponible todavía. |
 | `cloudflared --version` | Verifica la instalación. |
 
-### 17.4 Abrir el túnel del servidor
+### 16.4 Abrir el túnel del servidor
 
 Abre una **segunda ventana de PowerShell**, conéctate por SSH al servidor y ejecuta:
 
@@ -1094,7 +1094,7 @@ cloudflared tunnel --url http://localhost:5678
 Copia la URL `https://...trycloudflare.com` y **deja esa ventana abierta**.
 
 
-### 17.5 Crear el compose y el `.env` en el servidor
+### 16.5 Crear el compose y el `.env` en el servidor
 
 En tu **primera** sesión SSH:
 
@@ -1136,7 +1136,7 @@ Cambia `TU-URL-DEL-TUNEL` por la URL de **este** túnel (la del servidor, no la 
 > [!IMPORTANT]
 > No agregues `N8N_ENCRYPTION_KEY`: la clave ya viaja dentro del archivo `config` que copiaste.
 
-### 17.6 Levantar n8n y revisar los registros
+### 16.6 Levantar n8n y revisar los registros
 
 ```bash
 docker compose up -d
@@ -1151,7 +1151,7 @@ Busca en los registros:
 
 Los avisos sobre *deprecations*, el *Python task runner* y los permisos del archivo `config` son informativos y no impiden el funcionamiento.
 
-### 17.7 Publicar el workflow en el servidor
+### 16.7 Publicar el workflow en el servidor
 
 En los registros iniciales puede aparecer **`0 published workflows`**: el workflow se copió, pero hay que **publicarlo** para que registre el webhook.
 
@@ -1159,7 +1159,7 @@ En los registros iniciales puede aparecer **`0 published workflows`**: el workfl
 2. Abre tu workflow y pulsa **Publish**. (Opcional: borra cualquier *Manual Trigger* suelto).
 3. Revisa que ahora los registros muestren la activación.
 
-### 17.8 Verificar de punta a punta
+### 16.8 Verificar de punta a punta
 
 Abre:
 
