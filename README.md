@@ -75,10 +75,6 @@ style="border-radius: 24px;">
 | 19 | [Mantenimiento](#mantenimiento) | Disco, respaldos, IP fija |
 | | **PARTE III · Cierre** | |
 | 20 | [Trabajar con dos entornos (servidor ↔ Windows)](#dos-entornos) | Exportar, importar y no pelear por el webhook |
-| 21 | [Seguridad y publicación en GitHub](#seguridad) | Qué NO subir y cómo exportar el workflow limpio |
-| 22 | [Solución de problemas](#troubleshooting) | Errores reales y sus arreglos |
-| 23 | [Hoja de ruta](#roadmap) | Ideas para seguir mejorándolo |
-| 24 | [Checklist de capturas](#capturas) | Imágenes que debes agregar |
 | 25 | [Licencia y autoría](#licencia) | |
 
 
@@ -241,32 +237,10 @@ Debe mostrarte las versiones de WSL y del kernel.
   <img src="docs/wsl2.png" width="250"><br>
 <sub> Ahora sale el logo de Linux en el explorador de archivos</sub>
 
-### 6.3 <a href="https://www.docker.com/"> Instalar Docker Desktop </a>
-
-1. Descarga el instalador desde la web oficial de Docker (*Docker Desktop for Windows*).
-2. Ejecuta `Docker Desktop Installer.exe`.
-3. Abre Docker Desktop, acepta los términos.
-
-
-### 6.4 Verificar la instalación
-
-En PowerShell:
-
-```powershell
-docker --version
-docker run hello-world
-```
-
-| Comando | Qué hace |
-|---------|----------|
-| `docker --version` | Muestra la versión instalada. |
-| `docker run hello-world` | Descarga una imagen mínima de prueba y la ejecuta. Debe devolver *"Hello from Docker!"* |
-
----
+## 7. <a href="https://www.docker.com/"> Instalar Docker Desktop </a> y descargar (`pull`) a n8n
 
 <a id="n8n-pull"></a>
 
-## 7. Descargar (`pull`) y ejecutar n8n 
 
 ### 7.1 Imagen vs. contenedor
 
@@ -281,7 +255,6 @@ docker run hello-world
 <br>
 <sub>Creditos reservados al canal de Jaime Herrera por su tutorial</sub>
 <br>
-<sub>Desde minuto 2:22</sub>
 </p>
 
 ### 7.5 Comandos útiles para manejar el contenedor
@@ -315,14 +288,6 @@ docker run hello-world
 4. **Username** (debe ser único y **terminar en `bot`**): por ejemplo `TriviaDudeBot`. Si está ocupado, prueba una variante (`TriviaDude_bot`, `MiTriviaDudeBot`…).
 5. BotFather te responde con el **token**, algo como `123456789:AAH...`. **Guárdalo**: es la contraseña de tu bot.
 
-<p align="center">
-  <img src="docs/images/07-botfather-newbot.png" alt="Conversación con BotFather creando el bot TriviaDudeBot" width="520"><br>
-  <sub><b>Figura 7.</b> Creación del bot con <code>/newbot</code>. (Tapa el token en la captura).</sub>
-</p>
-
-> [!CAUTION]
-> **Quien tenga tu token controla tu bot.** No lo pegues en capturas, repositorios ni chats. Si se filtra, envía `/revoke` a BotFather para generar uno nuevo.
-
 Comandos de BotFather que conviene conocer:
 
 | Comando | Qué hace |
@@ -335,7 +300,6 @@ Comandos de BotFather que conviene conocer:
 | `/revoke` | Genera un token nuevo e invalida el anterior. |
 | `/deletebot` | Elimina el bot. |
 
-**Importante:** abre tu bot en Telegram y envíale cualquier mensaje (por ejemplo `hola`). Un bot solo puede escribirte después de que tú le hayas escrito primero.
 
 ### 8.2 Registrar el menú de comandos (`/setcommands`)
 
@@ -351,43 +315,25 @@ cyber - Pregunta de ciberseguridad de entrevista
 ```
 
 <p align="center">
-  <img src="docs/images/08-botfather-setcommands.png" alt="BotFather registrando el menú de comandos del bot con /setcommands" width="520"><br>
-  <sub><b>Figura 8.</b> Registro del menú de comandos con <code>/setcommands</code>.</sub>
-</p>
-
-> [!NOTE]
-> Esto solo registra el menú **visual** de Telegram. Lo que de verdad hace que cada comando funcione es el workflow de n8n (sección 11). Y el mensaje que responde a `/start` (el menú dentro del chat) también lo construye el workflow.
+  <img src="docs/setCommands.png" alt="BotFather registrando el menú de comandos del bot con /setcommands" width="500"><br>
+  <sub>
 
 ### 8.3 Obtener tu `chat_id` (opcional)
-
-TriviaDudeBot responde a **cualquier persona** que le escriba y lee el `chat_id` del propio mensaje, así que **no necesitas** conocerlo para que funcione. Lo necesitarías solo si quieres **restringir el bot a tu cuenta** (por ejemplo, con un IF antes del Switch).
-
-Cuando el bot ya tiene un webhook activo, el método clásico `getUpdates` **no funciona** (Telegram responde con un conflicto). Para ver tu `chat_id`:
 
 1. En n8n, abre el **Telegram Trigger** y pulsa **Listen for test event**.
 2. Escríbele un mensaje al bot.
 3. En el panel **Output** del trigger, despliega `message → chat → id`. Ese número es tu `chat_id`.
 
-También puedes mirarlo en la pestaña **Executions** del workflow, abriendo una ejecución pasada y haciendo clic en el Telegram Trigger.
-
-### 8.4 Obtener la API key de Groq
+### 8.4 <a href="https://console.groq.com/keys"><img src="docs/icons/groq.svg" width=30></a> Obtener la API key de Groq
 
 1. Entra a **console.groq.com** e inicia sesión.
 2. Ve a **API Keys → Create API Key**.
-3. Ponle un nombre (por ejemplo `triviadudebot`) y **copia la clave**: solo se muestra una vez.
+3. Ponle un nombre y **copia la clave**: solo se muestra una vez.
 
-<p align="center">
-  <img src="docs/images/09-groq-api-keys.png" alt="Consola de Groq mostrando la creación de una API key" width="650"><br>
-  <sub><b>Figura 9.</b> Creación de la API key en Groq. (Oculta la clave en la captura).</sub>
-</p>
 
 ### 8.5 Elegir el modelo
 
-En la documentación de Groq (`console.groq.com/docs/models`) hay una tabla de **Production Models**. Al construir este proyecto, los modelos **Llama 3.1 8B** y **Llama 3.3 70B** aparecían marcados como **Enterprise** ("Contact Sales"), es decir, **no disponibles en el plan Developer**. Usarlos devuelve este error:
-
-```text
-404 - The model `llama-3.3-70b-versatile` does not exist or you do not have access to it. (model_not_found)
-```
+En la documentación de Groq (`console.groq.com/docs/models`) hay una tabla de **Production Models**.
 
 Los que sí tenían límites y precio para el plan Developer eran:
 
@@ -396,10 +342,6 @@ Los que sí tenían límites y precio para el plan Developer eran:
 | `openai/gpt-oss-120b` | **Recomendado.** Más capaz: genera preguntas con una sola respuesta correcta y explicaciones fiables. |
 | `openai/gpt-oss-20b` | Más rápido y barato; sirve para preguntas más simples. |
 
-> [!TIP]
-> Los modelos cambian con el tiempo. Para ver cuáles tiene **tu cuenta**:
-> ```powershell
-> curl.exe https://api.groq.com/openai/v1/models -H "Authorization: Bearer TU_API_KEY_DE_GROQ"
 > ```
 > Ignora los modelos de audio (`whisper...`) y de moderación; elige uno de chat tipo *instruct* y copia su `id` tal cual. También puedes mirar **Settings → Limits** en la consola.
 
@@ -407,7 +349,7 @@ Los que sí tenían límites y precio para el plan Developer eran:
 
 <a id="tunel"></a>
 
-## 9. ☁️ El túnel público (Cloudflare)
+## 9. <a><img src="docs/icons/cloudflare.svg" width=40></a> El túnel público (Cloudflare)
 
 ### 9.1 El problema
 
@@ -415,7 +357,7 @@ El **Telegram Trigger** de n8n funciona con un **webhook**: cuando alguien escri
 
 ### 9.2 La solución
 
-**cloudflared** abre una conexión **de salida** desde tu equipo hacia Cloudflare, y Cloudflare te da una dirección pública HTTPS que reenvía todo a tu n8n. No tienes que abrir puertos del router ni cambiar nada del firewall.
+**cloudflared** abre una conexión **de salida** desde tu equipo hacia Cloudflare, y Cloudflare te da una dirección pública HTTPS que reenvía todo a tu n8n.
 
 ```mermaid
 flowchart LR
@@ -1792,539 +1734,11 @@ Si tu n8n de Windows conserva workflows **publicados** de pruebas anteriores, al
 - **Probando el Telegram Trigger completo:** necesitas un túnel propio y el procedimiento de la [sección 18.4](#operacion). Mientras pruebas, el webhook del bot está en Windows.
 - **Al terminar,** cierra el túnel de Windows (`Ctrl+C`), detén el n8n de Windows (`docker compose stop`) y, en el editor del servidor, haz **Unpublish** y luego **Publish** del workflow. Comprueba con `getWebhookInfo` que el `url` sea el del túnel del servidor.
 
-### 20.6 La opción limpia: un bot de pruebas aparte
 
-Para desarrollar sin riesgo, crea en BotFather un **segundo bot** (por ejemplo `TriviaDudeBot_dev`) y úsalo **solo en Windows**, con su propio token:
-
-1. Importa el workflow en Windows y asigna la credencial de Telegram del bot de pruebas.
-2. Cambia el token en la URL del nodo `sendPoll` por el del bot de pruebas.
-3. Publica y prueba en Windows cuanto quieras: el bot real del servidor ni se entera.
-4. Cuando el cambio esté listo, exporta desde Windows e impórtalo en el servidor (volviendo a poner el token del bot real en el `sendPoll`).
-
-### 20.7 Si prefieres que Windows sea la producción
-
-Si decides que tu PC sea el que sirve el bot, publica el workflow ahí y, en el editor del servidor, haz **Unpublish** del mismo workflow. Así, si el servidor se reinicia, no volverá a registrar su webhook ni a quitárselo a Windows. Recuerda que el bot solo responde mientras el túnel de Windows y Docker Desktop estén abiertos.
-
----
-
-<a id="seguridad"></a>
-
-## 21. 🔐 Seguridad y publicación en GitHub
-
-La idea en una frase: **los secretos viven en tu PC y en el servidor, y a GitHub solo suben plantillas y copias limpias.** Se logra con tres capas: que Git ignore lo sensible, limpiar los workflows exportados y **verificar antes de subir**.
-
-### 21.1 Qué SÍ y qué NO se sube
-
-| ✅ Se puede subir | ❌ NUNCA se sube |
-|------------------|------------------|
-| `README.md` y las capturas de `docs/images/` | El **token** del bot de Telegram |
-| `docker-compose.yml` (usando `${WEBHOOK_URL}`, sin URL fija) | La **API key** de Groq |
-| `.env.example` (solo con valores de ejemplo) | El archivo **`.env`** real |
-| `.gitignore` | La carpeta de datos de n8n (`n8n-data/` o `n8n/`): contiene la **base de datos**, tus **credenciales** y la **clave de cifrado** (`config`) |
-| `workflows/triviadudebot.json` **ya limpio** | Respaldos (`n8n_backup/`, `*.zip`), archivos `*.sqlite` y exportaciones sin limpiar (`*_RAW.json`) |
-| | Tu `chat_id`, la IP del servidor y tu usuario (no son críticos, pero es mejor no publicarlos) |
-
-Las credenciales de n8n **no se exportan** con el workflow, pero la base de datos y el archivo `config` juntos permiten descifrarlas. Por eso esa carpeta nunca debe acercarse al repositorio.
-
-### 21.2 Usa una carpeta aparte para el repositorio
-
-No hagas `git init` dentro de `C:\Users\TU_USUARIO\n8n` ni de `n8n-docker`. Crea una carpeta nueva:
-
-```powershell
-mkdir C:\Users\TU_USUARIO\proyectos\TriviaDudeBot
-cd C:\Users\TU_USUARIO\proyectos\TriviaDudeBot
-git --version
-git init
-```
-
-Si `git --version` no funciona, instala Git con `winget install Git.Git`, cierra y abre PowerShell y repite.
-
-### 21.3 Primero el `.gitignore`
-
-Crea el archivo y **haz commit de él antes de agregar cualquier otra cosa**:
-
-```powershell
-@'
-# Secretos y configuracion local
-.env
-*.env
-!.env.example
-
-# Datos de n8n (credenciales cifradas, clave de cifrado y base de datos)
-n8n-data/
-n8n/
-*.sqlite
-*.sqlite-shm
-*.sqlite-wal
-n8nEventLog*.log
-
-# Respaldos y exportaciones sin limpiar
-*backup*/
-*.zip
-*_RAW.json
-
-# Sistema y editores
-.DS_Store
-Thumbs.db
-.vscode/
-.idea/
-'@ | Set-Content -Encoding ascii .gitignore
-
-git add .gitignore
-git commit -m "Agregar .gitignore"
-```
-
-El `.gitignore` le dice a Git qué archivos **ignorar para siempre**, aunque luego los copies a esa carpeta por descuido. La línea `*_RAW.json` es un truco: guarda ahí tus exportaciones sin limpiar y Git las ignorará.
-
-Si Git responde *"Please tell me who you are"*, configura tu identidad una vez:
-
-```powershell
-git config --global user.name "TU NOMBRE O USUARIO"
-git config --global user.email "tu-correo@ejemplo.com"
-```
-
-> [!NOTE]
-> Ese nombre y correo **quedan visibles en cada commit** de un repositorio público. Si no quieres mostrar tu correo real, GitHub ofrece uno privado del tipo `ID+usuario@users.noreply.github.com` en *Settings → Emails*.
-
-### 21.4 Archivos de configuración sin secretos
-
-**`.env.example`** (el `.env` real nunca se sube):
-
-```dotenv
-# Copia este archivo como .env y completa tus valores.
-# NUNCA subas el archivo .env a GitHub.
-
-# URL pública del túnel (con https:// y terminada en /)
-WEBHOOK_URL=https://tu-tunel.trycloudflare.com/
-
-# Carpeta de datos de n8n
-#   Windows: C:/Users/TU_USUARIO/n8n
-#   Linux:   /home/TU_USUARIO/n8n-data
-N8N_DATA_DIR=C:/Users/TU_USUARIO/n8n
-```
-
-**`docker-compose.yml`**: el de la [sección 10.3](#compose-windows), con `${WEBHOOK_URL}` y `${N8N_DATA_DIR}`. Si el tuyo tiene la URL del túnel escrita directamente, **cámbiala antes de subirlo**.
-
-### 21.5 Exportar y limpiar el workflow
-
-1. En n8n, abre el workflow → **⋯ → Download**. Guárdalo con un nombre como `triviadudebot_RAW.json`, **fuera del repositorio** (por ejemplo, en Descargas).
-2. Ábrelo en **VS Code**. Evita limpiarlo con comandos de PowerShell: en Windows PowerShell 5, `Set-Content` puede dañar tildes y emojis del JSON.
-3. Pulsa `Ctrl+H` (buscar y reemplazar) y activa el botón de **expresión regular** (`.*`, atajo `Alt+R`):
-
-| Busca | Reemplaza por | Nota |
-|-------|---------------|------|
-| `bot\d+:[A-Za-z0-9_-]+` | `botTU_TOKEN_AQUI` | El token de Telegram dentro de la URL del `sendPoll`. *Reemplazar todo*. |
-| tu `chat_id` (el número) | `TU_CHAT_ID` | Solo si aparece. En este workflow suele **no** aparecer, porque se lee con una expresión. Para localizarlo, busca `\b\d{8,12}\b` y revisa **uno por uno** cada resultado (no uses *Reemplazar todo* con este patrón). |
-| `Bearer` y `gsk_` | — | No deben dar ningún resultado real (clave de Groq escrita a mano en un nodo). |
-| `pinData` | — | Si hay datos fijados, traen mensajes de prueba con tu nombre, usuario e ID. Bórralos. |
-
-4. Verifica que el JSON siga siendo válido y que no queden secretos:
-
-```powershell
-Select-String -Path .\triviadudebot_RAW.json -Pattern 'bot\d+:', 'gsk_', 'Bearer', 'pinData'
-Get-Content .\triviadudebot_RAW.json -Raw | ConvertFrom-Json | Out-Null
-```
-
-El primer comando solo debería mostrar `botTU_TOKEN_AQUI` en la URL del `sendPoll`. El segundo no debe imprimir ningún error.
-
-5. Cópialo al repositorio **con su nombre definitivo** y borra el original:
-
-```powershell
-cd C:\Users\TU_USUARIO\proyectos\TriviaDudeBot
-mkdir workflows
-Copy-Item "$env:USERPROFILE\Downloads\triviadudebot_RAW.json" workflows\triviadudebot.json
-Remove-Item "$env:USERPROFILE\Downloads\triviadudebot_RAW.json"
-```
-
-`Copy-Item` copia el contenido **byte a byte**, sin alterar tildes ni emojis. El único archivo con secretos nunca entra a la carpeta del repositorio, y el `*_RAW.json` del `.gitignore` queda como segunda barrera.
-
-> [!NOTE]
-> Los JSON de n8n traen datos que parecen raros pero no son secretos: los **IDs de las credenciales** (solo referencias; los valores nunca se exportan), el `webhookId` del Telegram Trigger y el `instanceId`. Puedes dejarlos.
-
-### 21.6 Verifica antes del commit (la capa más importante)
-
-```powershell
-git add .
-git status
-git diff --cached --name-only
-git grep --cached -nE "bot[0-9]{6,}:|gsk_"
-```
-
-| Comando | Qué debe pasar |
-|---------|----------------|
-| `git status` / `git diff --cached --name-only` | Solo deben aparecer los archivos que quieres subir. **No debe aparecer** ningún `.env`, `.sqlite`, `n8n-data` ni `_RAW.json`. |
-| `git grep --cached -nE "..."` | No debe devolver ninguna línea. Busca patrones de tokens **dentro** de lo preparado. |
-
-Si todo sale limpio:
-
-```powershell
-git commit -m "TriviaDudeBot: workflow de n8n con /start, /quiz y /cyber"
-```
-
-### 21.7 Sube primero a un repositorio privado
-
-1. En GitHub: **New repository**, con visibilidad **Private**.
-2. Conéctalo y sube:
-
-```powershell
-git branch -M main
-git remote add origin https://github.com/JeAleCast7/TriviaDudeBot.git
-git push -u origin main
-```
-
-(El nombre del repositorio es a tu gusto). Al principio pide iniciar sesión en el navegador: es normal y no guarda nada dentro de tu proyecto.
-
-3. Revisa el repositorio en la web, abriendo los archivos uno por uno. Cuando estés seguro de que está limpio, en **Settings → General → Danger Zone** puedes cambiarlo a público.
-
-Además, activa la **verificación en dos pasos** en tu cuenta de GitHub: así robar tu cuenta es mucho más difícil que robar un archivo.
-
-### 21.8 Si un secreto se sube por error
-
-Hazlo **en este orden**:
-
-1. **Revoca primero.** En BotFather, `/revoke` para el bot afectado; en la consola de Groq, elimina la API key y crea otra.
-2. Actualiza las credenciales nuevas en n8n (y el token en la URL del `sendPoll`).
-3. Después limpia GitHub. Borrar el archivo en un commit posterior **no basta**, porque el secreto sigue en el historial. Lo más simple es eliminar el repositorio y crearlo de nuevo con los archivos ya limpios.
-
-Revocar es lo que de verdad te protege: un token revocado ya no sirve, aunque alguien lo haya copiado.
-
-### 21.9 Checklist rápido antes de cada `push`
-
-- [ ] `git status` sin `.env`, `.sqlite`, `n8n-data` ni `_RAW.json`.
-- [ ] `git grep --cached` sin resultados reales.
-- [ ] `workflows/triviadudebot.json` con `botTU_TOKEN_AQUI` en el `sendPoll` y sin `pinData`.
-- [ ] Capturas con tokens, API keys, `chat_id` y la IP del servidor tapados.
-- [ ] Repositorio en **privado** hasta revisarlo completo.
-
----
-
-<a id="troubleshooting"></a>
-
-## 22. 🧯 Solución de problemas
-
-<details>
-<summary><b>🔧 <a id="err-wsl"></a>WSL: <code>CommandTimedOut</code> o <code>REGDB_E_CLASSNOTREG</code> al instalar Docker Desktop</b></summary>
-
-<br>
-
-**Síntoma:** Docker Desktop dice `checking WSL version ... DockerDesktop/Wsl/CommandTimedOut`, o `wsl --version` muestra *"WSL installation appears to be corrupted (Error code: Wsl/CallMsi/Install/REGDB_E_CLASSNOTREG)"*.
-
-**Causa:** WSL no está instalado, está desactualizado o su instalador (Windows Installer) tiene el registro dañado. Prueba en este orden:
-
-1. **Dejar que repare:** corre `wsl --install` y, cuando lo pida, presiona una tecla para reparar.
-2. **Re-registrar Windows Installer** (PowerShell como administrador):
-   ```powershell
-   msiexec /unregister
-   msiexec /regserver
-   Start-Service msiserver
-   ```
-   Si `Start-Service` falla, abre `services.msc`, pon **Windows Installer** en *Manual* e inícialo. Reinicia.
-3. **Desinstalar y reinstalar WSL:** *Configuración → Aplicaciones → Aplicaciones instaladas →* "Subsistema de Windows para Linux" → desinstalar, reiniciar y `wsl --install`.
-4. **Instalar el MSI a mano:** descarga `wsl.x.x.x.x.x64.msi` de `github.com/microsoft/WSL/releases` y ejecútalo.
-5. **Reparar archivos de Windows:**
-   ```powershell
-   DISM /Online /Cleanup-Image /RestoreHealth
-   sfc /scannow
-   ```
-6. **Activar las características de Windows a mano:**
-   ```powershell
-   dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
-   dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
-   ```
-7. **Si `wsl --version` se cuelga:**
-   ```powershell
-   wsl --shutdown
-   net stop LxssManager
-   net start LxssManager
-   ```
-
-Antes de reintentar Docker, confirma que `wsl --version` responde sin errores.
-
-</details>
-
-<details>
-<summary><b>🔧 n8n: <code>Credentials not found</code> en el nodo de Groq</b></summary>
-
-<br>
-
-El nodo tiene la autenticación activada pero **sin credencial seleccionada**. Abre el nodo → *Authentication:* **Generic Credential Type** → *Generic Auth Type:* **Header Auth** → elige (o crea) la credencial con *Name* `Authorization` y *Value* `Bearer TU_API_KEY`.
-
-</details>
-
-<details>
-<summary><b>🔧 Groq: <code>404 model_not_found</code> / "does not exist or you do not have access to it"</b></summary>
-
-<br>
-
-El modelo no está disponible en tu plan (los Llama marcados *Enterprise* no lo estaban en el plan Developer). Usa `openai/gpt-oss-120b` u otro que aparezca en tu lista (ver [8.5](#telegram-groq)).
-
-</details>
-
-<details>
-<summary><b>🔧 n8n: error de JSON en el nodo <code>sendPoll</code></b></summary>
-
-<br>
-
-Revisa que haya **una sola coma** después de la línea de `chat_id`, que la última línea (`"is_anonymous": false`) **no** lleve coma, y que el campo esté en modo **Using JSON**. Una coma doble (`,,`) rompe el JSON.
-
-</details>
-
-<details>
-<summary><b>🔧 n8n: <code>Paired item data unavailable</code> en el nodo <code>sendPoll</code></b></summary>
-
-<br>
-
-Como el nodo Code crea elementos nuevos, n8n a veces no puede emparejarlos con el trigger. Cambia `.item` por `.first()` en el `chat_id`:
-
-```json
-"chat_id": {{ $('Telegram Trigger').first().json.message.chat.id }},
-```
-
-</details>
-
-<details>
-<summary><b>🔧 Telegram Trigger: error de URL HTTPS / webhook</b></summary>
-
-<br>
-
-`WEBHOOK_URL` no se aplicó. Comprueba que empiece con `https://` y **termine en `/`**, que sea la URL del túnel **actual**, y recrea el contenedor con `docker compose up -d`. Verifica con `docker compose exec n8n printenv WEBHOOK_URL`.
-
-</details>
-
-<details>
-<summary><b>🔧 <code>getWebhookInfo</code> devuelve <code>"url": ""</code></b></summary>
-
-<br>
-
-Telegram no tiene ningún webhook registrado. Casi siempre es porque **el workflow no está publicado** (en los registros: `0 published workflows`). Pulsa **Publish** en el editor. Si lo habías publicado en otro n8n (por ejemplo el de Windows) y lo apagaste, el webhook se borró y hay que publicarlo en el nuevo.
-
-</details>
-
-<details>
-<summary><b>🔧 El bot dejó de responder, sin errores</b></summary>
-
-<br>
-
-Lo más probable es que el túnel se reinició y la URL cambió. Sigue los pasos de la [sección 18](#operacion) y comprueba `getWebhookInfo`.
-
-</details>
-
-<details>
-<summary><b>🔧 La URL del túnel da <code>502 Bad Gateway</code></b></summary>
-
-<br>
-
-El túnel funciona, pero n8n no está corriendo en el puerto 5678. Revisa con `docker ps` y arranca el contenedor (`docker compose up -d`).
-
-</details>
-
-<details>
-<summary><b>🔧 n8n: el login falla entrando por <code>http://IP:5678</code> (cookie segura)</b></summary>
-
-<br>
-
-n8n bloquea el login por HTTP desde otro equipo. Agrega `N8N_SECURE_COOKIE=false` al `environment` del compose (ya viene incluido en esta guía) o entra por la URL HTTPS del túnel.
-
-</details>
-
-<details>
-<summary><b>🔧 Telegram: <code>chat not found</code>, <code>Unauthorized</code> o error en las opciones</b></summary>
-
-<br>
-
-- **`chat not found`:** el `chat_id` es incorrecto o nunca le escribiste al bot.
-- **`Unauthorized`:** el token está mal escrito (debe ir pegado a `bot` en la URL, sin espacios).
-- **Error en `options`:** alguna opción supera 100 caracteres, o no hay exactamente 4. El nodo Code ya valida lo segundo.
-
-</details>
-
-<details>
-<summary><b>🔧 Code: <code>Unexpected token</code> al parsear la respuesta de la IA</b></summary>
-
-<br>
-
-El modelo devolvió texto extra además del JSON. Vuelve a ejecutar el nodo de Groq (a veces ocurre). Si es frecuente, quita `response_format` o `reasoning_effort` del body y deja que el prompt y el nodo Code limpien la respuesta.
-
-</details>
-
-<details>
-<summary><b>🔧 VM: aviso <code>soft lockup</code> durante la instalación o VM muy lenta</b></summary>
-
-<br>
-
-Ver [sección 13](#ubuntu) (el aviso es normal en VMs ocupadas) y [sección 15](#rendimiento) (tortuga verde, Hyper-V, ajustes de la VM).
-
-</details>
-
-<details>
-<summary><b>🔧 Groq: <code>429</code> (límite de uso)</b></summary>
-
-<br>
-
-Superaste el límite del plan gratuito. Espera un minuto y vuelve a intentar. El filtro por `chat_id` del nodo IF evita que otras personas gasten tu cuota.
-
-</details>
-
-<details>
-<summary><b>🔧 Telegram Trigger: <code>Bad Request: bad webhook: Failed to resolve host: Name or service not known</code></b></summary>
-
-<br>
-
-Telegram no logra encontrar el dominio que n8n le entrega. Casi siempre es porque **`WEBHOOK_URL` tiene un dominio de un túnel que ya no existe**, o porque el dominio nuevo todavía no se propagó.
-
-1. Aplica la [regla de las cuatro direcciones (18.1)](#operacion): túnel abierto, archivo de configuración, `printenv` y Test URL deben mostrar el **mismo** dominio.
-2. Recuerda que abrir el editor desde la URL nueva solo prueba que el túnel funciona para tu navegador; **no** cambia la dirección que n8n le da a Telegram, que sale de la variable `WEBHOOK_URL` del contenedor.
-3. Si todo coincide, comprueba la propagación con `nslookup TU-DOMINIO.trycloudflare.com 8.8.8.8` y espera uno o dos minutos (la salida de `cloudflared` avisa *"it may take some time to be reachable"*).
-
-</details>
-
-<details>
-<summary><b>🔧 El Switch no deja pasar ningún mensaje y el bot queda mudo</b></summary>
-
-<br>
-
-El Telegram Trigger y el Switch se ponen en verde (por la línea pasa "1 item"), pero ninguna salida del Switch se enciende. Causa más común: la expresión de una regla está en modo **Fixed** y se compara como texto literal. Compara las reglas: un campo en modo *Expression* muestra el icono **`fx`** y el texto en **verde**; si una regla no lo tiene, borra su contenido, pégala de nuevo y cambia **Fixed** por **Expression**.
-
-Para depurar, abre el Switch y mira su **Output** (una pestaña por salida) y el **Resultado** de la expresión al pasar el mouse sobre el campo: debe mostrar exactamente `/start`, `/quiz` o `/cyber`. Prueba temporalmente con la versión simple `{{ $json.message.text }}`.
-
-</details>
-
-<details>
-<summary><b>🔧 El editor muestra un dominio viejo en la Test URL</b></summary>
-
-<br>
-
-El editor muestra **exactamente** la `WEBHOOK_URL` del contenedor que lo sirve. Si no coincide con tu túnel actual:
-
-- Comprueba la barra de direcciones: `localhost:5678` es el n8n de Windows; la IP del servidor o un dominio `trycloudflare.com` es el n8n del servidor.
-- Guardar el compose **no basta**: ejecuta `docker compose up -d --force-recreate` y vuelve a comprobar con `docker compose exec n8n printenv WEBHOOK_URL`.
-- Recarga con `Ctrl+F5`.
-- Cada vez que reinicias `cloudflared`, el dominio cambia: el túnel abierto ahora puede ser otro distinto del que escribiste en el archivo.
-
-</details>
-
-<details>
-<summary><b>🔧 <code>grep: .env: No such file or directory</code> al cambiar la URL</b></summary>
-
-<br>
-
-Tu `WEBHOOK_URL` está **escrita directamente dentro del `docker-compose.yml`** y no existe ningún `.env`. Edita el compose (ver [18.2](#operacion) para averiguar cuál es tu caso) y recrea el contenedor.
-
-</details>
-
-<details>
-<summary><b>🔧 <code>docker compose up -d</code> dice <code>Running</code> y no cambia nada</b></summary>
-
-<br>
-
-Compose no detectó ninguna diferencia. Verifica que guardaste el archivo y estás en la carpeta correcta; si dudas, usa `docker compose up -d --force-recreate`.
-
-</details>
-
-<details>
-<summary><b>🔧 Docker Desktop muestra "dos contenedores": <code>n8n-docker</code> y <code>n8n_local</code></b></summary>
-
-<br>
-
-No lo son: `n8n-docker` es el **grupo** de Docker Compose (lleva el nombre de la carpeta del compose) y `n8n_local` es tu único contenedor. Ver [10.5](#compose-windows).
-
-</details>
-
-<details>
-<summary><b>🔧 Groq no recibe el prompt (<code>systemPrompt</code> vacío o inexistente)</b></summary>
-
-<br>
-
-Revisa que el campo se llame exactamente **`systemPrompt`** en los dos nodos *Edit Fields* (con la P mayúscula, sin espacios), que ambos estén conectados al nodo de Groq y que el valor esté en modo **Expression** (aparece la vista previa del resultado y no los `{{ }}` literales). Recuerda que ejecutar solo el nodo de Groq (*Execute step*) falla siempre: hay que ejecutar el flujo completo desde el trigger.
-
-</details>
-
-<details>
-<summary><b>🔧 El nodo Code en Python falla con "Python runner unavailable"</b></summary>
-
-<br>
-
-La imagen oficial de n8n no incluye Python. Usa el nodo Code en **JavaScript** (como en la sección 11.7) o consulta la nota de Python allí.
-
-</details>
-
----
-
-<a id="roadmap"></a>
-
-## 23. 🧭 Hoja de ruta
-
-**Mejoras del bot**
-
-- [ ] **Más comandos de trivia** (`/linux`, `/sql`, `/redes`, `/python`…): cada uno es una regla nueva en el Switch y un nodo *Edit Fields* con su prompt, conectado al mismo Groq.
-- [ ] **Parámetros** en los comandos (`/quiz b1`, `/cyber dificil`), leyendo lo que va después del comando.
-- [ ] **Salida de respaldo** del Switch para mostrar el menú ante cualquier mensaje desconocido.
-- [ ] **Puntaje y racha** por usuario (por ejemplo con tablas de datos de n8n).
-- [ ] **Pregunta diaria** automática con un **Schedule Trigger**.
-- [ ] **Reintento** si la IA devuelve un JSON inválido (`Error Trigger` o reintentos del nodo).
-- [ ] Botón de **"explícame más"** tras responder el quiz.
-
-**Infraestructura**
-
-- [ ] **Túnel con nombre de Cloudflare** + dominio propio: URL fija y servicio que arranca solo con el servidor (evita todo el ciclo de la sección 18).
-- [ ] Dominio estático gratuito de otro proveedor de túneles (por ejemplo ngrok; revisa sus condiciones vigentes).
-- [ ] **Polling** en lugar de webhook: n8n pregunta a Telegram cada pocos segundos (`getUpdates`) y no necesita URL pública, a costa de unos segundos de demora.
-- [ ] `cloudflared` como servicio de `systemd`.
-- [ ] **Bot de pruebas** aparte para desarrollar en Windows sin tocar el bot real.
-- [ ] IP estática en el servidor y respaldos automáticos de `n8n-data`.
-- [ ] Fijar la versión de la imagen de n8n en lugar de `latest`.
 
 ---
 
 <a id="capturas"></a>
-
-## 24. 📸 Checklist de capturas
-
-Guarda las imágenes en `docs/images/` con **estos nombres exactos** y el README las mostrará automáticamente.
-
-| ✔ | Archivo | Qué capturar |
-|---|---------|--------------|
-| ☐ | `00-demo.png` | Portada: el menú de `/start` y un quiz respondido en Telegram |
-| ☐ | `01-wsl-version.png` | Salida de `wsl --version` |
-| ☐ | `02-docker-desktop-instalador.png` | Instalador de Docker Desktop con WSL 2 marcado |
-| ☐ | `03-docker-desktop-wsl2.png` | Settings → General con el motor WSL 2 activo |
-| ☐ | `04-docker-pull-n8n.png` | Pestaña Images descargando `n8nio/n8n` |
-| ☐ | `05-docker-run-opciones.png` | Ventana Run con nombre, puerto y volumen |
-| ☐ | `06-n8n-registro-propietario.png` | Primera pantalla de n8n |
-| ☐ | `07-botfather-newbot.png` | Conversación con BotFather (**sin token**) |
-| ☐ | `08-botfather-setcommands.png` | BotFather con `/setcommands` y las tres líneas de comandos |
-| ☐ | `09-groq-api-keys.png` | Consola de Groq (**sin la clave**) |
-| ☐ | `10-cloudflared-tunel-windows.png` | Túnel abierto en Windows |
-| ☐ | `11-n8n-por-tunel.png` | n8n cargando desde la URL del túnel |
-| ☐ | `12-docker-desktop-contenedor.png` | Docker Desktop → Containers con el grupo y el contenedor |
-| ☐ | `13-flujo-completo.png` | Los 8 nodos conectados |
-| ☐ | `14-credencial-groq.png` | Credencial Header Auth (**sin valor**) |
-| ☐ | `15-credencial-telegram.png` | Credencial Telegram (**sin token**) |
-| ☐ | `16-nodo-telegram-trigger.png` | Nodo Telegram Trigger |
-| ☐ | `17-nodo-switch.png` | Switch con las 3 reglas y *Rename Output* |
-| ☐ | `18-switch-expresion-fx.png` | Una regla con `fx` (verde) y otra en modo *Fixed* (para comparar) |
-| ☐ | `19-nodo-send-message.png` | Nodo Send a text message con el texto del menú |
-| ☐ | `20-nodo-prompt-ingles.png` | Nodo Edit Fields «Prompt inglés» con la vista previa del resultado |
-| ☐ | `21-nodo-prompt-cyber.png` | Nodo Edit Fields «Prompt cyber» con la vista previa del resultado |
-| ☐ | `22-nodo-groq.png` | Nodo HTTP Request a Groq con el body |
-| ☐ | `23-nodo-code.png` | Nodo Code y su salida |
-| ☐ | `24-nodo-sendpoll.png` | Nodo `sendPoll` (**token oculto**) |
-| ☐ | `25-test-start.png` | Telegram: respuesta del bot a `/start` |
-| ☐ | `26-test-quiz.png` | Telegram: quiz de `/quiz` ya respondido, con la explicación |
-| ☐ | `27-test-cyber.png` | Telegram: quiz de `/cyber` ya respondido, con la explicación |
-| ☐ | `28-publish.png` | Botón Publish / workflow publicado |
-| ☐ | `29-virtualbox-nueva-vm.png` | Asistente de nueva VM |
-| ☐ | `30-virtualbox-red-puente.png` | Red en adaptador puente |
-| ☐ | `31-ubuntu-instalador-ssh.png` | Instalador con OpenSSH marcado |
-| ☐ | `32-ssh-conexion.png` | Sesión SSH conectada |
-| ☐ | `33-docker-hello-world-ubuntu.png` | `docker run hello-world` en Ubuntu |
-| ☐ | `34-scp-copia-datos.png` | `scp` y `ls -la ~/n8n-data` |
-| ☐ | `35-cloudflared-tunel-servidor.png` | Túnel corriendo en el servidor |
-| ☐ | `36-logs-n8n-servidor.png` | Registros de n8n arrancando en el servidor |
-| ☐ | `37-getwebhookinfo.png` | Respuesta de `getWebhookInfo` (**token oculto**) |
-| ☐ | `38-bot-funcionando-servidor.png` | Bot respondiendo desde el servidor |
-| ☐ | `39-test-url-trigger.png` | Telegram Trigger → *Webhook URLs* → Test URL (dominio visible) |
-| ☐ | `40-import-workflow.png` | Menú ⋯ → *Import from file* |
 
 > [!CAUTION]
 > Antes de subir las capturas, **tapa o difumina** tokens, API keys, tu `chat_id`, la IP del servidor, correos y cualquier dato personal.
@@ -2333,16 +1747,8 @@ Guarda las imágenes en `docs/images/` con **estos nombres exactos** y el README
 
 <a id="licencia"></a>
 
-## 25. 📄 Licencia y autoría
+## 25.  Licencia y autoría
 
 Proyecto con fines educativos. Antes de publicarlo, agrega un archivo `LICENSE` con la licencia que prefieras (MIT es una opción habitual para proyectos de este tipo).
 
 **Autor:** [@JeAleCast7](https://github.com/JeAleCast7)
-
-<div align="center">
-
-—
-
-⭐ Si esta guía te sirvió, deja una estrella en el repositorio.
-
-</div>
