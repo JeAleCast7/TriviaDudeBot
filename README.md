@@ -401,12 +401,10 @@ Tras unos segundos verás un recuadro con tu URL pública:
 
 <a id="compose-windows"></a>
 
-## 10. 📦 Pasar n8n a Docker Compose (`WEBHOOK_URL`)
+## 10.  Pasar n8n a Docker Compose (`WEBHOOK_URL`)
 
 Para que n8n **registre correctamente el webhook** en Telegram, debe conocer su dirección pública. Eso se hace con la variable **`WEBHOOK_URL`**. La forma ordenada de manejarla es con un `docker-compose.yml`.
 
-> [!NOTE]
-> En n8n 2.x los registros muestran un aviso recomendando el nombre `N8N_WEBHOOK_URL` en lugar de `WEBHOOK_URL`. Con la versión probada (2.48.6) **`WEBHOOK_URL` sigue funcionando**, y es la que usa esta guía.
 
 ### 10.1 Las dos carpetas: datos y configuración
 
@@ -465,7 +463,7 @@ N8N_DATA_DIR=C:/Users/TU_USUARIO/n8n
 > [!NOTE]
 > **Dos formas de escribir la URL.** En esta guía el compose lee `WEBHOOK_URL` desde un archivo `.env`. También es válido escribirla directamente en el compose, como `- WEBHOOK_URL=https://...trycloudflare.com/`. Cualquiera de las dos funciona; lo importante es saber **cuál tienes tú**, porque es el archivo que debes editar cuando cambie el túnel.
 
-### 10.4 Reemplazar el contenedor
+### 10.3 Reemplazar el contenedor
 
 El contenedor antiguo ya está detenido. Bórralo (esto **no** borra tu carpeta de datos) y levanta el nuevo con Compose:
 
@@ -483,20 +481,10 @@ docker compose up -d
 | `docker compose up -d --force-recreate` | Fuerza que lo recree **siempre**. Útil cuando dudas de si tomó los cambios. |
 
 > [!CAUTION]
-> **Nunca uses `docker compose down -v`**: la opción `-v` elimina volúmenes y podrías perder datos.
+> **Nunca usar `docker compose down -v`**: la opción `-v` elimina volúmenes y podrías perder datos.
 
-### 10.5 ¿Por qué Docker Desktop muestra "dos contenedores"?
 
-Después de usar Compose verás en Docker Desktop una fila `n8n-docker` y, debajo, otra `n8n_local`. **No son dos contenedores**: la primera es el **grupo** (Docker Compose agrupa los contenedores de un proyecto bajo el nombre de la carpeta donde está el `docker-compose.yml`), y la segunda es tu único contenedor de n8n, con su imagen y su puerto.
-
-Cada vez que ejecutas `docker compose up -d` con una variable cambiada, el contenedor se **recrea** y su ID (la columna que se ve en Docker Desktop) cambia. Tus datos no se tocan porque viven en la carpeta `n8n`.
-
-<p align="center">
-  <img src="docs/images/12-docker-desktop-contenedor.png" alt="Docker Desktop mostrando el grupo n8n-docker y el contenedor n8n_local" width="650"><br>
-  <sub><b>Figura 12.</b> El grupo <code>n8n-docker</code> (la carpeta del compose) y, debajo, el único contenedor <code>n8n_local</code>.</sub>
-</p>
-
-### 10.6 Verificar
+### 10.4 Verificar
 
 ```powershell
 docker compose exec n8n printenv WEBHOOK_URL
@@ -504,18 +492,11 @@ docker compose exec n8n printenv WEBHOOK_URL
 
 Debe imprimir la URL de tu túnel. Después abre `http://localhost:5678` y confirma que tus workflows y credenciales siguen ahí.
 
-**Plan de vuelta** si algo sale mal (tienes tu respaldo y tu carpeta intacta):
-
-```powershell
-docker compose down
-docker run -d --name n8n_local -p 5678:5678 -v C:\Users\TU_USUARIO\n8n:/home/node/.n8n n8nio/n8n:latest
-```
-
 ---
 
 <a id="workflow"></a>
 
-## 11. 🧩 Construir el workflow de TriviaDudeBot
+## 11. Construir el workflow de TriviaDudeBot
 
 ### 11.0 La idea antes de los clics
 
@@ -528,26 +509,11 @@ Hay tres comandos y cada uno debe hacer algo distinto. Para repartirlos se usa u
 
 Y para no repetir nodos, las dos ramas de quiz **comparten la misma cadena** (Groq → Code → envío del quiz). Cada rama solo deja antes un "papelito" con las instrucciones para la IA, y Groq lo lee:
 
-```mermaid
-flowchart LR
-    A["1 · Telegram Trigger"] --> S{"2 · Switch"}
-    S -- "/start" --> M["3 · Send a text message<br/>(menú)"]
-    S -- "/quiz" --> P1["4 · Prompt inglés<br/>(Edit Fields)"]
-    S -- "/cyber" --> P2["5 · Prompt cyber<br/>(Edit Fields)"]
-    P1 --> G["6 · HTTP Request<br/>Groq"]
-    P2 --> G
-    G --> C["7 · Code<br/>validar JSON"]
-    C --> Q["8 · HTTP Request<br/>sendPoll"]
-    S -. "otro texto (opcional)" .-> M
-```
 
 <p align="center">
-  <img src="docs/images/13-flujo-completo.png" alt="Vista completa del workflow de TriviaDudeBot en n8n" width="800"><br>
-  <sub><b>Figura 13.</b> Workflow completo de TriviaDudeBot: trigger, Switch, menú, prompts, Groq, Code y <code>sendPoll</code>.</sub>
+  <img src="docs/workflow.png" alt="Vista completa del workflow de TriviaDudeBot en n8n" width="800"><br>
 </p>
 
-> [!TIP]
-> Si tienes un workflow anterior con la cadena Groq → Code → `sendPoll`, puedes **reciclarla**: selecciona solo esos nodos, cópialos con `Ctrl+C` y pégalos con `Ctrl+V` en el workflow nuevo. **No copies el Telegram Trigger viejo**: apunta a otro bot. Después revisa el token del paso 8 (`sendPoll`).
 
 ### 11.1 Crear las credenciales
 
@@ -561,38 +527,27 @@ En n8n: **Credentials → Create credential** (o desde dentro de cada nodo).
 | Name | `Authorization` |
 | Value | `Bearer TU_API_KEY_DE_GROQ` (la palabra `Bearer`, un espacio y la clave) |
 
-<p align="center">
-  <img src="docs/images/14-credencial-groq.png" alt="Credencial Header Auth para Groq en n8n" width="560"><br>
-  <sub><b>Figura 14.</b> Credencial de Groq (oculta el valor en la captura).</sub>
-</p>
+<br>
 
 **Credencial de Telegram**
 
 | Campo | Valor |
 |-------|-------|
 | Tipo | **Telegram API** |
-| Access Token | El token que te dio BotFather para **TriviaDudeBot** |
+| Access Token | El token que brindo BotFather para **TriviaDudeBot** |
 
-<p align="center">
-  <img src="docs/images/15-credencial-telegram.png" alt="Credencial Telegram API en n8n" width="560"><br>
-  <sub><b>Figura 15.</b> Credencial de Telegram (oculta el token en la captura).</sub>
-</p>
-
-> [!TIP]
-> Guardar las claves como **credenciales** (y no escritas dentro de un nodo) evita que viajen dentro del workflow exportado.
 
 ### 11.2 Nodo 1 · Telegram Trigger
 
 Es el **disparador**: se activa cada vez que alguien escribe al bot.
 
-1. Haz clic en **+** (*Add first step*) y busca **Telegram Trigger** → **On message**.
+1. Click en **+** (*Add first step*) y busca **Telegram Trigger** → **On message**.
 2. **Credential:** elige la credencial de Telegram de TriviaDudeBot.
 3. **Updates:** `message`.
 4. Déjalo con el nombre **`Telegram Trigger`**: otros nodos lo referencian por ese nombre.
 
 <p align="center">
-  <img src="docs/images/16-nodo-telegram-trigger.png" alt="Configuración del nodo Telegram Trigger" width="650"><br>
-  <sub><b>Figura 16.</b> Nodo Telegram Trigger.</sub>
+  <img src="docs/telegramtrigger.png" alt="Configuración del nodo Telegram Trigger" width="500"><br>
 </p>
 
 > [!NOTE]
@@ -616,8 +571,7 @@ Es el **disparador**: se activa cada vez que alguien escribe al bot.
 3. Activa **Rename Output** en cada regla y escribe el nombre de la tabla, para identificar las salidas en el lienzo.
 
 <p align="center">
-  <img src="docs/images/17-nodo-switch.png" alt="Nodo Switch con las tres reglas /start, /quiz y /cyber" width="650"><br>
-  <sub><b>Figura 17.</b> Nodo Switch con sus tres reglas y las salidas renombradas.</sub>
+  <img src="docs/switch.png" alt="Nodo Switch con las tres reglas /start, /quiz y /cyber" width="500"><br>
 </p>
 
 **Qué hace la expresión, por partes:**
@@ -632,13 +586,6 @@ Es el **disparador**: se activa cada vez que alguien escribe al bot.
 
 > [!WARNING]
 > **El error más común de este nodo: el campo en modo *Fixed*.** Si pegas la expresión y el campo queda en modo fijo, n8n la trata como **texto literal** y nunca coincide con ningún comando: el flujo se detiene **sin mostrar ningún error** y el bot parece mudo. Reconocerlo es fácil: un campo en modo *Expression* muestra el icono **`fx`** a la izquierda y el texto resaltado en **verde**. Si no lo ves, pasa el mouse sobre el campo y cambia **Fixed** por **Expression**.
-
-<p align="center">
-  <img src="docs/images/18-switch-expresion-fx.png" alt="Comparación de una regla en modo Fixed y otra en modo Expression con el icono fx" width="650"><br>
-  <sub><b>Figura 18.</b> Una regla en modo <i>Expression</i> (icono <code>fx</code>, texto verde) frente a otra en modo <i>Fixed</i>.</sub>
-</p>
-
-**Salida de respaldo (opcional, recomendada).** En el Switch, **Options → Fallback Output → Extra Output**. Conecta esa salida extra al **mismo** nodo del menú (el del paso siguiente): así, cuando alguien escribe algo que no es un comando, el bot le muestra el menú en lugar de quedarse callado.
 
 ### 11.4 Nodo 3 · Send a text message (el menú de `/start`)
 
@@ -664,13 +611,6 @@ Estos son mis comandos:
 
 Además, en **Add Field** busca **Append n8n Attribution** y **desactívalo**: viene activado por defecto y añade una línea de "enviado con n8n" al mensaje.
 
-<p align="center">
-  <img src="docs/images/19-nodo-send-message.png" alt="Nodo Send a text message con el menú de comandos" width="650"><br>
-  <sub><b>Figura 19.</b> Nodo que envía el menú de <code>/start</code>.</sub>
-</p>
-
-> [!TIP]
-> Telegram convierte automáticamente los `/comandos` de un texto en **enlaces tocables**, igual que hace BotFather. El usuario solo toca `/quiz` y se envía solo.
 
 ### 11.5 Nodos 4 y 5 · Edit Fields: el "papelito" con el prompt
 
@@ -690,8 +630,7 @@ You are an English teacher. Generate ONE multiple-choice question at CEFR B2 lev
 ```
 
 <p align="center">
-  <img src="docs/images/20-nodo-prompt-ingles.png" alt="Nodo Edit Fields con el campo systemPrompt del quiz de inglés" width="650"><br>
-  <sub><b>Figura 20.</b> Nodo <code>Prompt inglés</code>: campo <code>systemPrompt</code> y vista previa del resultado.</sub>
+  <img src="docs/promptIngles.png" alt="Nodo Edit Fields con el campo systemPrompt del quiz de inglés" width="500"><br>
 </p>
 
 **Value de `Prompt cyber`:**
