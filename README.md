@@ -342,10 +342,7 @@ Los que sí tenían límites y precio para el plan Developer eran:
 | `openai/gpt-oss-120b` | **Recomendado.** Más capaz: genera preguntas con una sola respuesta correcta y explicaciones fiables. |
 | `openai/gpt-oss-20b` | Más rápido y barato; sirve para preguntas más simples. |
 
-> ```
-> Ignora los modelos de audio (`whisper...`) y de moderación; elige uno de chat tipo *instruct* y copia su `id` tal cual. También puedes mirar **Settings → Limits** en la consola.
-
----
+<br>
 
 <a id="tunel"></a>
 
@@ -357,14 +354,10 @@ El **Telegram Trigger** de n8n funciona con un **webhook**: cuando alguien escri
 
 ### 9.2 La solución
 
-**cloudflared** abre una conexión **de salida** desde tu equipo hacia Cloudflare, y Cloudflare te da una dirección pública HTTPS que reenvía todo a tu n8n.
+**cloudflared** abre una conexión **de salida** desde tu equipo hacia Cloudflare, y Cloudflare te da una dirección pública HTTPS que reenvía todo a n8n.
 
-```mermaid
-flowchart LR
-    TG["Telegram"] -- "HTTPS" --> CF["https://algo.trycloudflare.com"]
-    CF -- "túnel cifrado" --> CD["cloudflared (tu PC)"]
-    CD --> N8["n8n · localhost:5678"]
-```
+<a> <img src="docs/cloudflare.png">
+</a>
 
 ### 9.3 Instalar y abrir el túnel en Windows
 
@@ -372,7 +365,7 @@ flowchart LR
 winget install Cloudflare.cloudflared
 ```
 
-Cierra y vuelve a abrir PowerShell (para que Windows reconozca el comando) y verifica:
+Cierra y vuelve a abrir PowerShell y verifica:
 
 ```powershell
 cloudflared --version
@@ -391,31 +384,18 @@ cloudflared tunnel --url http://localhost:5678
 
 Tras unos segundos verás un recuadro con tu URL pública:
 
-```text
-Your quick Tunnel has been created! Visit it at:
-https://palabra-palabra-palabra.trycloudflare.com
-```
 
 <p align="center">
-  <img src="docs/images/10-cloudflared-tunel-windows.png" alt="Terminal con cloudflared mostrando la URL pública del túnel" width="650"><br>
-  <sub><b>Figura 10.</b> Túnel abierto: <code>cloudflared</code> entrega la URL pública.</sub>
+  <img src="docs/tunnel.png" alt="Terminal con cloudflared mostrando la URL pública del túnel" width="650"><br>
 </p>
 
-**Cópiala y comprueba** que funciona abriéndola en el navegador: debe aparecer tu n8n.
+**Cópiala y comprueba** que funciona abriéndola en el navegador: debe aparecer login de n8n.
 
-<p align="center">
-  <img src="docs/images/11-n8n-por-tunel.png" alt="n8n cargando desde la URL trycloudflare.com" width="650"><br>
-  <sub><b>Figura 11.</b> n8n accesible desde la URL pública del túnel.</sub>
-</p>
 
 > [!WARNING]
 > - **Deja esa ventana de PowerShell abierta.** Si la cierras (o pulsas `Ctrl+C`), el túnel se apaga y el bot deja de recibir mensajes.
-> - La URL **cambia cada vez** que reinicias el túnel (ver [sección 18](#operacion)).
-> - Cualquiera con la URL puede ver tu pantalla de login de n8n (sigue protegida por tu usuario y contraseña). No la compartas.
-> - Si ves **502 Bad Gateway**: el túnel funciona, pero n8n no está corriendo en el puerto 5678.
-
-> [!NOTE]
-> **¿Aparece *"it may take some time to be reachable"*?** Un dominio recién creado puede tardar uno o dos minutos en ser visible desde fuera de tu PC. Si Telegram responde `Failed to resolve host`, no es un error de tu configuración: espera un poco y reintenta (ver [18.5](#operacion)).
+> - La URL **cambia cada vez** que reinicias el túnel.
+> - Cualquiera con la URL puede ver tu pantalla de login de n8n.
 
 ---
 
@@ -439,37 +419,10 @@ Al terminar esta sección tendrás **dos carpetas distintas** en tu PC. Es norma
 
 Tu workflow **está dentro de `database.sqlite`**. No hay un archivo del workflow que buscar: se edita desde el navegador, en `http://localhost:5678`.
 
-### 10.2 Respaldo antes de tocar nada
 
-**a) Averigua dónde están tus datos.** Si creaste el contenedor desde Docker Desktop, confírmalo:
+### 10.2 Los archivos del proyecto
 
-```powershell
-docker inspect n8n_local --format "{{ json .Mounts }}"
-```
-
-Debe aparecer algo como `"Source":"C:\\Users\\TU_USUARIO\\n8n","Destination":"/home/node/.n8n"`. Esa es tu carpeta de datos.
-
-**b) Detén el contenedor y copia la carpeta** (detenerlo antes evita copiar la base de datos a medias):
-
-```powershell
-docker stop n8n_local
-Copy-Item -Recurse C:\Users\TU_USUARIO\n8n C:\Users\TU_USUARIO\n8n_backup
-```
-
-**c) Confirma que existe el archivo de la clave de cifrado:**
-
-```powershell
-Test-Path C:\Users\TU_USUARIO\n8n\config
-```
-
-Debe responder `True`. Ese archivo `config` contiene la **clave que cifra tus credenciales**.
-
-> [!CAUTION]
-> **No definas `N8N_ENCRYPTION_KEY` si no la tenías desde el principio.** n8n generó una clave automática y la guardó en `config`. Si ahora pones otra distinta, tus credenciales (Groq, Telegram) dejarán de poder descifrarse.
-
-### 10.3 Los archivos del proyecto
-
-Crea la carpeta `C:\Users\TU_USUARIO\n8n-docker` (**aparte de los datos de n8n**) con estos archivos.
+Crea la carpeta `C:\Users\TU_USUARIO\n8n-docker`.
 
 **`docker-compose.yml`**
 
@@ -490,7 +443,7 @@ services:
       - ${N8N_DATA_DIR:?Define N8N_DATA_DIR en el archivo .env}:/home/node/.n8n
 ```
 
-**`.env`** (este archivo **no se sube** a GitHub; en el repositorio va `.env.example`)
+**`.env.example`**
 
 ```dotenv
 WEBHOOK_URL=https://palabra-palabra-palabra.trycloudflare.com/
@@ -510,7 +463,7 @@ N8N_DATA_DIR=C:/Users/TU_USUARIO/n8n
 | `volumes: ...:/home/node/.n8n` | **Tu misma carpeta de datos** conectada al contenedor. |
 
 > [!NOTE]
-> **Dos formas de escribir la URL.** En esta guía el compose lee `WEBHOOK_URL` desde un archivo `.env`. También es válido escribirla directamente en el compose, como `- WEBHOOK_URL=https://...trycloudflare.com/`. Cualquiera de las dos funciona; lo importante es saber **cuál tienes tú**, porque es el archivo que debes editar cuando cambie el túnel (ver [sección 18](#operacion)).
+> **Dos formas de escribir la URL.** En esta guía el compose lee `WEBHOOK_URL` desde un archivo `.env`. También es válido escribirla directamente en el compose, como `- WEBHOOK_URL=https://...trycloudflare.com/`. Cualquiera de las dos funciona; lo importante es saber **cuál tienes tú**, porque es el archivo que debes editar cuando cambie el túnel.
 
 ### 10.4 Reemplazar el contenedor
 
