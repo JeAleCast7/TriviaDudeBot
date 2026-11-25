@@ -386,7 +386,7 @@ Tras unos segundos verás un recuadro con tu URL pública:
 
 
 <p align="center">
-  <img src="docs/tunnel.png" alt="Terminal con cloudflared mostrando la URL pública del túnel" width="650"><br>
+  <img src="docs/tunnel.png" alt="Terminal con cloudflared mostrando la URL pública del túnel" width="750"><br>
 </p>
 
 **Cópiala y comprueba** que funciona abriéndola en el navegador: debe aparecer login de n8n.
