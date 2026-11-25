@@ -68,10 +68,9 @@ style="border-radius: 24px;">
 | 12 | [Crear la VM en VirtualBox](#vm) | Hardware, disco y red |
 | 13 | [Instalar Ubuntu Server](#ubuntu) | Instalador paso a paso |
 | 14 | [Conectarte por SSH](#ssh) | IP, `ssh`, y alternativa con NAT |
-| 15 | [Rendimiento de la VM](#rendimiento) | Qué hacer si va lenta |
-| 16 | [Instalar Docker en Ubuntu](#docker-ubuntu) | Cada comando explicado |
-| 17 | [Migrar n8n al servidor](#migracion) | `scp`, permisos, compose, túnel y publicación |
-| 18 | [Operación diaria: cuando cambia la URL del túnel](#operacion) | Servidor Linux y Windows, paso a paso |
+| 15 | [Instalar Docker en Ubuntu](#docker-ubuntu) | Cada comando explicado |
+| 16 | [Migrar n8n al servidor](#migracion) | `scp`, permisos, compose, túnel y publicación |
+| 17 | [Operación diaria: cuando cambia la URL del túnel](#operacion) | Servidor Linux y Windows, paso a paso |
 | | **PARTE III · Cierre** | |
 | 19 | [Exportar el workflow](#exportar) | Exportar, importar y no pelear por el webhook |
 | 20 | [Licencia y autoría](#licencia) | |
