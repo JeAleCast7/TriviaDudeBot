@@ -683,7 +683,7 @@ Conecta **las salidas de los dos nodos de prompt** a este único nodo. n8n permi
 
 | Parte del body | Para qué sirve |
 |----------------|----------------|
-| `model` | El modelo de Groq (ver [8.5](#telegram-groq)). |
+| `model` | El modelo de Groq. |
 | `temperature: 1` | Más variedad: no repite siempre las mismas preguntas. |
 | `reasoning_effort: "low"` | Estos modelos "razonan" antes de responder; así lo hacen rápido y gastan menos tokens. Si Groq se queja de este parámetro, bórralo. |
 | `response_format: json_object` | Pide que la respuesta sea JSON válido. Si diera error, quítalo: el prompt ya exige JSON y el nodo Code lo limpia. |
@@ -798,38 +798,30 @@ Debes ver algo así (sin `last_error_message`):
 
 Hasta aquí el bot funciona en tu PC con Windows. Ahora lo llevamos a un **servidor Ubuntu** que corre en una máquina virtual, para que sea un servicio separado de tu entorno de desarrollo.
 
-```mermaid
-flowchart TB
-    A["12 · Crear la VM"] --> B["13 · Instalar Ubuntu Server"]
-    B --> C["14 · Conectar por SSH"]
-    C --> D["16 · Instalar Docker"]
-    D --> E["17 · Migrar n8n + túnel"]
-    E --> F["Bot funcionando desde el servidor ✅"]
-```
+<p align="center">
+<a><img src="docs/ubuntuServer.png">
+</p>
 
 ---
 
 <a id="vm"></a>
 
-## 12. 🖥️ Crear la VM en VirtualBox
+## 12. Crear la VM en VirtualBox
 
+Imagen ISO de ubuntu server <a href="https://ubuntu.com/download/server">Aqui <img src="docs/icons/ubuntu.svg" width="20"></a>
 1. Abre VirtualBox y pulsa **Nueva** (*New*).
 2. **Nombre:** `ubuntu-server`. **Imagen ISO:** selecciona la ISO de Ubuntu Server que descargaste. VirtualBox suele detectar *Tipo:* **Linux** y *Versión:* **Ubuntu (64-bit)**; si no, ponlos a mano.
-3. Marca **Skip Unattended Installation** para instalar manualmente y ver cada paso.
+3. Marcar **Skip Unattended Installation** para instalar manualmente y ver cada paso.
 4. **Hardware:**
 
 | Recurso | Valor recomendado |
 |---------|-------------------|
-| Memoria RAM | **4096 MB** (el mínimo útil es 2048 MB) |
+| Memoria RAM | **4096 MB**
 | Procesadores | **2 CPU** |
 | Disco duro | Crear uno nuevo de **30 GB** |
 
 5. Pulsa **Finalizar**.
 
-<p align="center">
-  <img src="docs/images/29-virtualbox-nueva-vm.png" alt="Asistente de VirtualBox para crear la máquina virtual" width="650"><br>
-  <sub><b>Figura 29.</b> Creación de la VM <code>ubuntu-server</code> en VirtualBox.</sub>
-</p>
 
 ### Configurar la red (antes de encenderla)
 
