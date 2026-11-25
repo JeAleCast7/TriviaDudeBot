@@ -130,7 +130,7 @@ Con `/start` el recorrido es más corto: el Switch envía directamente el mensaj
 
 <a id="keywords"></a>
 
-## 3.  Conceptos clave
+## 3.  Keywords
 
 | Término | En palabras simples |
 |---------|---------------------|
