@@ -184,6 +184,7 @@ triviadudebot/
 │   └── triviadudebot.json ← el workflow exportado y LIMPIO (sin token)
 ├── .env.example           ← plantilla de variables
 ├── .gitignore             ← evita subir secretos y datos de n8n
+├── LICENSE                ← licencia de uso del repositorio
 ├── README.md              ← esta guía
 └── docker-compose.yml     ← define el contenedor de n8n
 
