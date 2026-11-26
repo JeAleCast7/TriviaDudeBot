@@ -187,8 +187,6 @@
       "parameters": {
         "method": "POST",
         "url": "https://api.groq.com/openai/v1/chat/completions",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={\n  \"model\": \"openai/gpt-oss-120b\",\n  \"temperature\": 1,\n  \"reasoning_effort\": \"low\",\n  \"response_format\": { \"type\": \"json_object\" },\n  \"messages\": [\n    { \"role\": \"system\", \"content\": {{ JSON.stringify($json.systemPrompt) }} },\n    { \"role\": \"user\", \"content\": \"Give me a new question.\" }\n  ]\n}",
@@ -201,13 +199,7 @@
         240
       ],
       "id": "46331eeb-90a0-4780-979f-028e44fcd00c",
-      "name": "HTTP Request",
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "JbY1uePdzM6Ptux2",
-          "name": "Header Auth account"
-        }
-      }
+      "name": "HTTP Request"
     },
     {
       "parameters": {
