@@ -178,15 +178,15 @@ Con `/start` el recorrido es más corto: el Switch envía directamente el mensaj
 
 ```text
 triviadudebot/
-├── README.md              ← esta guía
-├── docker-compose.yml     ← define el contenedor de n8n
-├── .env.example           ← plantilla de variables
-├── .gitignore             ← evita subir secretos y datos de n8n
+├── docs/                  ← capturas usadas en este README
+│   └── icons/             ← iconos de tools
 ├── workflows/
 │   └── triviadudebot.json ← el workflow exportado y LIMPIO (sin token)
-└── docs/
-    └── images/            ← capturas usadas en este README
-    └── icons/             ← iconos de tools
+├── .env.example           ← plantilla de variables
+├── .gitignore             ← evita subir secretos y datos de n8n
+├── README.md              ← esta guía
+└── docker-compose.yml     ← define el contenedor de n8n
+
 ```
 <br>
 
